@@ -38,7 +38,7 @@
   .preview-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#e8c46a;color:#3a2600;text-align:center;font-size:13px;font-weight:600;padding:5px}
 
   /* ---------- Holzwand ---------- */
-  .wall{display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
+  .wall{opacity:0;animation:wallIn 2s cubic-bezier(.2,.7,.3,1) 3s forwards;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
   .frame{
     grid-row:var(--r);grid-column:var(--c);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;
     --inset:calc(var(--cell) * .11);
@@ -46,11 +46,15 @@
     background-size:var(--tsd, calc(var(--cell) * 8) calc(var(--cell) * 4.8));
     background-position:calc(var(--cell) * (1 - var(--c))) calc(var(--cell) * 1.2 * (1 - var(--r)));
   }
-  .win{position:absolute;inset:var(--inset);background:#24160d;
-    box-shadow:inset 0 4px 8px rgba(0,0,0,.85),inset 0 0 0 1px rgba(0,0,0,.6),0 1px 0 rgba(255,220,200,.12)}
-  .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s .35s}
+  .win{position:absolute;inset:var(--inset);background:#24160d;border-radius:calc(var(--cell) * .07);
+    box-shadow:inset 0 4px 10px rgba(0,0,0,.85),0 0 calc(var(--cell) * .05) calc(var(--cell) * .015) rgba(40,5,2,.45)}
+  .win::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .6s .4s;
+    box-shadow:inset 0 0 calc(var(--cell) * .07) calc(var(--cell) * .03) rgba(35,10,4,.8),inset 0 3px 6px rgba(0,0,0,.6)}
+  .frame.open .win::after{opacity:1}
+  .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;opacity:0;transition:opacity .7s .35s}
   .frame.open .win img{opacity:1}
 
+  @keyframes wallIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
   /* Schneehauben, Eiszapfen, Lichterkette */
   .cap,.ice,.lights{display:none;position:absolute;pointer-events:none}
   .frame{--ox:calc(var(--cell) * (1 - var(--c)))}
@@ -78,7 +82,7 @@
 
   /* Holztürchen */
   .door{
-    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:2px;
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:calc(var(--cell) * .07);
     background:
       repeating-linear-gradient(90deg,rgba(110,68,28,.11) 0 1px,transparent 1px 5px),
       repeating-linear-gradient(92deg,rgba(255,242,215,.09) 0 2px,transparent 2px 13px),
@@ -315,7 +319,7 @@ function buildWall(){
   });
   // Schnee, Lichterkette und Eiszapfen als durchgehende Streifen je Kante
   const runs = (list, cls) => {
-    for (const [dir, html] of [[-1, '<div class="cap"></div><div class="lights"></div>'], [1, '<div class="ice"></div>']]){
+    for (const [dir, html] of [[-1, '<div class="cap"></div>'], [1, '<div class="ice"></div>']]){
       const edge = list.filter(([r,c]) => !has(list, r+dir, c)).sort((a,b) => a[0]-b[0] || a[1]-b[1]);
       let i = 0;
       while (i < edge.length){
@@ -721,8 +725,8 @@ if (tok){
   if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
   if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
   else {
-    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 400);
-    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 1200);
+    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 5000);
+    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 5800);
   }
 }
 </script>
