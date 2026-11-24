@@ -53,17 +53,23 @@
 
   /* Schneehauben, Eiszapfen, Lichterkette */
   .cap,.ice,.lights{display:none;position:absolute;pointer-events:none}
-  .cap{left:-4px;right:-4px;top:calc(var(--cell) * -.075);height:calc(var(--cell) * .16);z-index:7;
-    background:var(--snowcap) var(--sx,0) 0/calc(var(--cell) * .9) 100% repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
+  .frame{--ox:calc(var(--cell) * (1 - var(--c)))}
+  .cap{left:0;right:0;top:calc(var(--cell) * -.075);height:calc(var(--cell) * .16);z-index:7;
+    background:var(--snowcap-img, var(--snowcap)) 0 0/var(--capsize, calc(var(--cell) * .9) 100%) repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
   .ice{left:2px;right:2px;bottom:calc(var(--cell) * -.17);height:calc(var(--cell) * .18);z-index:7;
-    background:var(--icicles) var(--sx,0) 0/calc(var(--cell) * .7) 100% repeat-x;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+    background:var(--icicles-img, var(--icicles)) 0 0/var(--icesize, calc(var(--cell) * .7) 100%) repeat-x;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
   .lights{left:0;right:0;top:calc(var(--cell) * .055);height:16px;z-index:8;
     background:var(--wire) 0 0/calc(var(--cell) * .25) 16px repeat-x}
   .lights::before,.lights::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 50% 66%,#fffbe8 0 1.6px,#ffc65a 2.8px,rgba(255,176,60,.5) 5px,rgba(255,176,60,0) 9px);
     background-size:calc(var(--cell) * .5) 16px;animation:blink 2.2s ease-in-out infinite alternate}
   .lights::after{background-position:calc(var(--cell) * .25) 0;animation-delay:1.1s}
   @keyframes blink{from{opacity:1}to{opacity:.45}}
-  .frame.td .cap,.frame.td .lights,.frame.bd .ice{display:block}
+  .run{position:relative;pointer-events:none;z-index:7}
+  .run .cap,.run .lights,.run .ice{display:block}
+  .run .cap{left:-6px;right:-6px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8px,#000 calc(100% - 8px),transparent);mask-image:linear-gradient(90deg,transparent,#000 8px,#000 calc(100% - 8px),transparent)}
+  .run.m{display:none}
+  .wall.photo-snow .cap{height:calc(var(--cell) * .3);top:calc(var(--cell) * -.15)}
+  .wall.photo-ice .ice{height:calc(var(--cell) * .46);bottom:calc(var(--cell) * -.43)}
 
   /* Holztürchen */
   .door{
@@ -113,8 +119,9 @@
     .frame{grid-row:var(--mr);grid-column:var(--mc);background-image:var(--tex-m);
       background-size:var(--tsm, calc(var(--cell) * 4) calc(var(--cell) * 9.6));
       background-position:calc(var(--cell) * (1 - var(--mc))) calc(var(--cell) * 1.2 * (1 - var(--mr)))}
-    .frame.td .cap,.frame.td .lights,.frame.bd .ice{display:none}
-    .frame.tm .cap,.frame.tm .lights,.frame.bm .ice{display:block}
+    .run.d{display:none}
+    .run.m{display:block}
+    .frame{--ox:calc(var(--cell) * (1 - var(--mc)))}
   }
 
   /* ---------- Overlay ---------- */
@@ -284,6 +291,9 @@ function buildWall(){
     wall.style.setProperty("--tex-d", `url(${src})`); wall.style.setProperty("--tex-m", `url(${src})`);
     wall.style.setProperty("--tsd", "calc(var(--cell) * 8) auto"); wall.style.setProperty("--tsm", "calc(var(--cell) * 8) auto");
   });
+  // bilder/schnee.png = Schneekante, bilder/eis.png = Eiszapfen (jeweils mit transparentem Hintergrund)
+  tryImg(["bilder/schnee.png"], src => { wall.style.setProperty("--snowcap-img", `url(${src})`); wall.style.setProperty("--capsize", "auto 100%"); wall.classList.add("photo-snow"); });
+  tryImg(["bilder/eis.png"], src => { wall.style.setProperty("--icicles-img", `url(${src})`); wall.style.setProperty("--icesize", "auto 100%"); wall.classList.add("photo-ice"); });
   tryImg(["bilder/tuer.jpg","bilder/tuer.png"], src => { wall.style.setProperty("--door-img", `url(${src})`); wall.classList.add("photo-door"); });
   pos.forEach(([r,c], i) => {
     const day = ORDER[i], d = doorOf(day), [mr, mc] = posM[i];
@@ -292,12 +302,27 @@ function buildWall(){
       (has(pos, r-1, c) ? "" : " td") + (has(pos, r+1, c) ? "" : " bd") +
       (has(posM, mr-1, mc) ? "" : " tm") + (has(posM, mr+1, mc) ? "" : " bm");
     f.style.cssText = `--r:${r};--c:${c};--mr:${mr};--mc:${mc};--sx:${(i*37)%90}px`;
-    f.innerHTML = `<div class="win"><img alt=""><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="cap"></div><div class="lights"></div><div class="ice"></div><div class="lock">🔒</div>`;
+    f.innerHTML = `<div class="win"><img alt=""><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
     f.setAttribute("role","button"); f.setAttribute("aria-label","Türchen " + day);
     f.addEventListener("click", () => tap(day));
     if (opened.has(day) && isUnlocked(day)) { f.classList.add("open"); setImg(f.querySelector("img"), day); }
     frames[day] = f; wall.appendChild(f);
   });
+  // Schnee, Lichterkette und Eiszapfen als durchgehende Streifen je Kante
+  const runs = (list, cls) => {
+    for (const [dir, html] of [[-1, '<div class="cap"></div><div class="lights"></div>'], [1, '<div class="ice"></div>']]){
+      const edge = list.filter(([r,c]) => !has(list, r+dir, c)).sort((a,b) => a[0]-b[0] || a[1]-b[1]);
+      let i = 0;
+      while (i < edge.length){
+        let j = i; while (j+1 < edge.length && edge[j+1][0] === edge[i][0] && edge[j+1][1] === edge[j][1]+1) j++;
+        const el = document.createElement("div");
+        el.className = "run " + cls;
+        el.style.cssText = `grid-row:${edge[i][0]};grid-column:${edge[i][1]} / span ${j-i+1}`;
+        el.innerHTML = html; wall.appendChild(el); i = j+1;
+      }
+    }
+  };
+  runs(pos, "d"); runs(posM, "m");
 }
 
 function tap(day){
