@@ -38,7 +38,7 @@
   .preview-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#e8c46a;color:#3a2600;text-align:center;font-size:13px;font-weight:600;padding:5px}
 
   /* ---------- Holzwand ---------- */
-  .wall{opacity:0;animation:wallIn 2s cubic-bezier(.2,.7,.3,1) 3s forwards;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
+  .wall{opacity:0;animation:wallIn 2.5s cubic-bezier(.2,.7,.3,1) 1s forwards;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
   .frame{
     grid-row:var(--r);grid-column:var(--c);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;
     --inset:calc(var(--cell) * .11);
@@ -163,7 +163,7 @@
 
 <main>
   <h1>A Very Married McKnights’ Christmas</h1>
-  <div class="tagline">Unser erster Advent als Mr. &amp; Mrs. McKnight</div>
+  <div class="tagline">Unsere erste Adventszeit als Mr. &amp; Mrs. McKnight</div>
   <div class="wall" id="wall"></div>
 </main>
 
@@ -725,8 +725,8 @@ if (tok){
   if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
   if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
   else {
-    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 5000);
-    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 5800);
+    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 3600);
+    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 4400);
   }
 }
 </script>
