@@ -33,7 +33,7 @@
   main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:30px 16px 42vh}
   h1{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:clamp(28px,5.6vw,52px);text-align:center;line-height:1.1;
     text-shadow:0 0 20px rgba(255,214,120,.55),0 2px 8px rgba(0,0,0,.7)}
-  .tagline{font-family:Caveat,cursive;font-size:clamp(19px,4vw,25px);color:rgba(255,255,255,.9);margin-top:4px;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+  .tagline{font-family:Caveat,cursive;font-size:clamp(19px,4vw,25px);color:rgba(255,255,255,.9);margin:4px 0 34px;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.7)}
   .sub{font-family:Caveat,cursive;font-size:clamp(21px,4.4vw,29px);color:var(--gold);margin:4px 0 30px;text-align:center;min-height:1.3em;text-shadow:0 1px 4px rgba(0,0,0,.7)}
   .preview-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#e8c46a;color:#3a2600;text-align:center;font-size:13px;font-weight:600;padding:5px}
 
@@ -148,9 +148,7 @@
 <main>
   <h1>A Very Married McKnight Christmas Adventure</h1>
   <div class="tagline">Unser erster Advent als Mr. &amp; Mrs. McKnight ❤️</div>
-  <div class="sub" id="sub"></div>
   <div class="wall" id="wall"></div>
-  <div class="hint">Scanne den QR-Code aus deinem Päckchen,<br>um dein Türchen zu öffnen 🎁</div>
 </main>
 
 <div class="overlay" id="overlay">
@@ -380,6 +378,7 @@ function showNote(icon, msg, extra, day){
 /* ---------- Untertitel ---------- */
 function subtitle(){
   const s = $("sub"), d1 = unlockDate(1);
+  if (!s) return;
   if (now < d1){ const n = sleeps(1); s.textContent = n === 1 ? "Morgen geht's los! ✨" : `Noch ${n} Mal schlafen bis zum ersten Türchen ✨`; }
   else if (now < unlockDate(25)) s.textContent = `Heute ist der ${now.getDate()}. Dezember – Türchen ${now.getDate()} wartet auf dich ✨`;
   else s.textContent = "Frohe Weihnachten! ❤️";
