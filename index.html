@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Very Married McKnight Christmas Adventure</title>
+<meta name="theme-color" content="#0a1426">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#8e2a2c; --gold:#e8c46a;
+    --cell:min(112px, calc((100vw - 48px) / 8));
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{background:#0a1426;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden;min-height:100vh}
+
+  /* ---------- Hintergrund ---------- */
+  .sky{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .sky svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .sky::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,8,18,.55),rgba(4,8,18,0) 30%)}
+  .bulb{animation:twinkle 2.6s ease-in-out infinite}
+  @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+  .smoke circle{transform-box:fill-box;transform-origin:center;animation:smoke 7s linear infinite;opacity:0}
+  @keyframes smoke{0%{transform:translate(0,0) scale(.35);opacity:0}15%{opacity:.55}100%{transform:translate(40px,-190px) scale(2.6);opacity:0}}
+  #snow{position:fixed;inset:0;z-index:1;pointer-events:none}
+  #snowFront{position:fixed;inset:0;z-index:6;pointer-events:none}
+  #fx{position:fixed;inset:0;z-index:40;pointer-events:none}
+
+  /* ---------- Kopf ---------- */
+  main{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:30px 16px 42vh}
+  h1{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:clamp(28px,5.6vw,52px);text-align:center;line-height:1.1;
+    text-shadow:0 0 20px rgba(255,214,120,.55),0 2px 8px rgba(0,0,0,.7)}
+  .tagline{font-family:Caveat,cursive;font-size:clamp(19px,4vw,25px);color:rgba(255,255,255,.9);margin-top:4px;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+  .sub{font-family:Caveat,cursive;font-size:clamp(21px,4.4vw,29px);color:var(--gold);margin:4px 0 30px;text-align:center;min-height:1.3em;text-shadow:0 1px 4px rgba(0,0,0,.7)}
+  .preview-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#e8c46a;color:#3a2600;text-align:center;font-size:13px;font-weight:600;padding:5px}
+
+  /* ---------- Holzwand ---------- */
+  .wall{display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
+  .frame{
+    grid-row:var(--r);grid-column:var(--c);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    --inset:calc(var(--cell) * .11);
+    background-color:#7d201c;background-image:var(--tex-d);
+    background-size:calc(var(--cell) * 8) calc(var(--cell) * 4.8);
+    background-position:calc(var(--cell) * (1 - var(--c))) calc(var(--cell) * 1.2 * (1 - var(--r)));
+  }
+  .win{position:absolute;inset:var(--inset);background:#24160d;
+    box-shadow:inset 0 4px 8px rgba(0,0,0,.85),inset 0 0 0 1px rgba(0,0,0,.6),0 1px 0 rgba(255,220,200,.12)}
+  .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s .35s}
+  .frame.open .win img{opacity:1}
+
+  /* Schneehauben, Eiszapfen, Lichterkette */
+  .cap,.ice,.lights{display:none;position:absolute;pointer-events:none}
+  .cap{left:-4px;right:-4px;top:calc(var(--cell) * -.075);height:calc(var(--cell) * .16);z-index:7;
+    background:var(--snowcap) var(--sx,0) 0/calc(var(--cell) * .9) 100% repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35))}
+  .ice{left:2px;right:2px;bottom:calc(var(--cell) * -.17);height:calc(var(--cell) * .18);z-index:7;
+    background:var(--icicles) var(--sx,0) 0/calc(var(--cell) * .7) 100% repeat-x;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+  .lights{left:0;right:0;top:calc(var(--cell) * .055);height:16px;z-index:8;
+    background:var(--wire) 0 0/calc(var(--cell) * .25) 16px repeat-x}
+  .lights::before,.lights::after{content:"";position:absolute;inset:0;background-image:radial-gradient(circle at 50% 66%,#fffbe8 0 1.6px,#ffc65a 2.8px,rgba(255,176,60,.5) 5px,rgba(255,176,60,0) 9px);
+    background-size:calc(var(--cell) * .5) 16px;animation:blink 2.2s ease-in-out infinite alternate}
+  .lights::after{background-position:calc(var(--cell) * .25) 0;animation-delay:1.1s}
+  @keyframes blink{from{opacity:1}to{opacity:.45}}
+  .frame.td .cap,.frame.td .lights,.frame.bd .ice{display:block}
+
+  /* Holztürchen */
+  .door{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:2px;
+    background:
+      repeating-linear-gradient(90deg,rgba(110,68,28,.11) 0 1px,transparent 1px 5px),
+      repeating-linear-gradient(92deg,rgba(255,242,215,.09) 0 2px,transparent 2px 13px),
+      linear-gradient(165deg,#e6cfa4 0%,#d2b380 50%,#bb9661 100%);
+    border:1px solid #7a5530;
+    box-shadow:3px 5px 7px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,250,235,.65),inset 0 0 calc(var(--cell) * .09) rgba(90,55,20,.4);
+  }
+  .door::before{content:"";position:absolute;left:-2px;right:-2px;top:calc(var(--cell) * -.035);height:calc(var(--cell) * .075);
+    background:var(--snowcap) 0 0/100% 100% no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+  .door::after{content:"";position:absolute;right:calc(var(--cell) * .045);top:50%;width:calc(var(--cell) * .075);height:calc(var(--cell) * .075);transform:translateY(-50%);border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#f7e7b8,#a17a35 60%,#583c14);box-shadow:0 1px 2px rgba(0,0,0,.7)}
+  .orn{font-size:calc(var(--cell) * .12);color:#7b2a1a;line-height:1;margin-bottom:3px}
+  .num{font-family:"Playfair Display",Georgia,serif;font-weight:900;color:#8a1f1a;font-size:calc(var(--cell) * .34);line-height:1;text-shadow:0 1px 0 rgba(255,240,210,.55)}
+  .frame.special .num{background:linear-gradient(180deg,#c99a3c,#7a5216 55%,#b98a30);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+  .frame.special::after{content:"✨";position:absolute;top:calc(var(--cell) * .12);right:calc(var(--cell) * .07);font-size:calc(var(--cell) * .16);filter:drop-shadow(0 0 3px rgba(255,220,120,.8));z-index:9}
+  .frame.open::after{display:none}
+  .door.poof{animation:poof 1s ease-in forwards;pointer-events:none}
+  @keyframes poof{0%{opacity:1;filter:brightness(1)}25%{opacity:1;filter:brightness(1.5) drop-shadow(0 0 8px #ffd970);transform:scale(1.03)}100%{opacity:0;filter:brightness(2.4) blur(7px);transform:scale(1.12) translateY(-6px)}}
+  .frame.open .door{display:none}
+  .frame.glow .win{animation:glow 1.8s ease-out}
+  @keyframes glow{0%{box-shadow:inset 0 4px 8px rgba(0,0,0,.85)}25%{box-shadow:0 0 30px 12px rgba(255,215,110,.9),inset 0 0 20px rgba(255,215,110,.8)}100%{box-shadow:inset 0 4px 8px rgba(0,0,0,.85)}}
+  .frame.shake .door{animation:shake .55s}
+  @keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-5px) rotate(-3deg)}35%{transform:translateX(5px) rotate(3deg)}55%{transform:translateX(-4px) rotate(-2deg)}75%{transform:translateX(3px) rotate(1deg)}}
+  .lock{position:absolute;left:50%;top:50%;z-index:9;font-size:calc(var(--cell) * .38);transform:translate(-50%,-50%) scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+  .frame.show-lock .lock{transform:translate(-50%,-50%) scale(1)}
+
+  /* Holzschild */
+  .hint{position:relative;margin-top:40px;font-family:Kalam,Caveat,cursive;font-size:clamp(15px,3.6vw,19px);color:#f7ecd6;text-align:center;max-width:460px;line-height:1.45;
+    padding:12px 26px 13px;border-radius:20px;border:3px solid #1c120b;
+    background:repeating-linear-gradient(180deg,rgba(0,0,0,.28) 0 1px,transparent 1px 15px),repeating-linear-gradient(90deg,rgba(255,220,180,.04) 0 2px,transparent 2px 9px),linear-gradient(180deg,#4d3525,#2c1d13);
+    box-shadow:0 10px 20px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.12);text-shadow:0 1px 2px rgba(0,0,0,.8)}
+  .hint::before{content:"";position:absolute;left:4px;right:4px;top:-11px;height:20px;background:var(--snowcap) 0 0/90px 100% repeat-x;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+  .hint::after{content:"";position:absolute;left:18px;right:18px;bottom:-19px;height:20px;background:var(--icicles) 0 0/70px 100% repeat-x}
+
+  /* Handy: Form um 90° gedreht */
+  @media (max-width:640px){
+    :root{--cell:min(92px, calc((100vw - 34px) / 4))}
+    .wall{grid-template-columns:repeat(4,var(--cell))}
+    .frame{grid-row:var(--mr);grid-column:var(--mc);background-image:var(--tex-m);
+      background-size:calc(var(--cell) * 4) calc(var(--cell) * 9.6);
+      background-position:calc(var(--cell) * (1 - var(--mc))) calc(var(--cell) * 1.2 * (1 - var(--mr)))}
+    .frame.td .cap,.frame.td .lights,.frame.bd .ice{display:none}
+    .frame.tm .cap,.frame.tm .lights,.frame.bm .ice{display:block}
+  }
+
+  /* ---------- Overlay ---------- */
+  .overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:rgba(4,9,24,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .polaroid{background:#fffdf6;color:#2b2b2b;padding:14px 14px 16px;width:min(88vw,430px);border-radius:2px;
+    box-shadow:0 20px 50px rgba(0,0,0,.6);transform:rotate(-2deg) scale(.55) translateY(40px);transition:transform .55s cubic-bezier(.3,1.4,.5,1);position:relative}
+  .overlay.show .polaroid{transform:rotate(-2deg) scale(1)}
+  .polaroid img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#ddd}
+  .polaroid .date{font-family:Caveat,cursive;font-weight:700;font-size:27px;color:var(--red);margin-top:10px}
+  .polaroid .text{font-family:Caveat,cursive;font-size:23px;line-height:1.2;margin-top:2px;white-space:pre-line}
+  .tape{position:absolute;top:-12px;left:50%;width:110px;height:26px;margin-left:-55px;background:rgba(232,196,106,.55);transform:rotate(3deg);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .note{background:linear-gradient(160deg,#fcf5e4,#efe1c1);color:#3b2a1a;width:min(86vw,380px);padding:26px 22px 20px;border-radius:10px;text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,.6);border:2px solid #c9a24f;transform:scale(.6);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
+  .overlay.show .note{transform:scale(1)}
+  .note .big{font-size:54px;line-height:1}
+  .note .msg{font-family:Caveat,cursive;font-size:29px;line-height:1.15;margin:10px 0 8px;color:var(--red);white-space:pre-line}
+  .note .cd{font-size:15px;color:#5b4632}
+  .note .cd b{font-variant-numeric:tabular-nums}
+  .close{display:block;margin:14px auto 0;background:var(--red);color:#fff;border:0;border-radius:999px;padding:9px 22px;font-size:15px;font-weight:600;cursor:pointer}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+<canvas id="snow"></canvas>
+<canvas id="snowFront"></canvas>
+
+<main>
+  <h1>A Very Married McKnight Christmas Adventure</h1>
+  <div class="tagline">Unser erster Advent als Mr. &amp; Mrs. McKnight ❤️</div>
+  <div class="sub" id="sub"></div>
+  <div class="wall" id="wall"></div>
+  <div class="hint">Scanne den QR-Code aus deinem Päckchen,<br>um dein Türchen zu öffnen 🎁</div>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="polaroid hidden" id="polaroid">
+    <div class="tape"></div>
+    <img id="pImg" alt="">
+    <div class="date" id="pDate"></div>
+    <div class="text" id="pText"></div>
+    <button class="close" data-close>Schließen</button>
+  </div>
+  <div class="note hidden" id="note">
+    <div class="big" id="nIcon">🔒</div>
+    <div class="msg" id="nMsg"></div>
+    <div class="cd" id="nCd"></div>
+    <button class="close" data-close>Okay …</button>
+  </div>
+</div>
+<canvas id="fx"></canvas>
+
+<script>
+/* =====================================================================
+   EINSTELLUNGEN – hier trägst du alles ein
+   ===================================================================== */
+const CONFIG = {
+  year: 2026,                       // Jahr des Kalenders
+  previewKey: "weihnachtsmann-testet" // Vorschau: ?vorschau=weihnachtsmann-testet
+};
+
+// Bilder: lege sie in den Ordner "bilder" als 01.jpg, 02.jpg … 24.jpg.
+// Fehlt ein Bild, erscheint automatisch eine weihnachtliche Illustration.
+// "text": Nachricht unter dem Foto (leer lassen = nur das Datum).
+const DOORS = [
+  { day: 1,  token: "sk7q2m", text: "Heute beginnt unsere Reise durch den Advent.\n24 Türchen, 24 kleine Momente – hinter jedem steckt ein Stück von uns. ❤️" },
+  { day: 2,  token: "p4x9wd", text: "" },
+  { day: 3,  token: "h2nf8t", text: "" },
+  { day: 4,  token: "zq6r1c", text: "" },
+  { day: 5,  token: "m8vb3k", text: "" },
+  { day: 6,  token: "n1kl4s", text: "Ho ho ho! Der Nikolaus war da 🎅\nUnd weil heute auch der 2. Advent ist, gibt's doppelt Grund zum Kuscheln. 🕯️🕯️" },
+  { day: 7,  token: "g5ta9e", text: "" },
+  { day: 8,  token: "w3jd7u", text: "" },
+  { day: 9,  token: "c9ry2h", text: "" },
+  { day: 10, token: "f6pm4z", text: "" },
+  { day: 11, token: "b2xe8n", text: "" },
+  { day: 12, token: "r7ch5v", text: "Halbzeit! 🎉\nDie Hälfte ist geschafft – und ich würde jeden Tag davon wieder mit dir verbringen." },
+  { day: 13, token: "y4gk1w", text: "3. Advent – drei Kerzen brennen schon. 🕯️🕯️🕯️\nAm schönsten leuchtet trotzdem dein Lachen." },
+  { day: 14, token: "d8sn6q", text: "" },
+  { day: 15, token: "u3fz9b", text: "" },
+  { day: 16, token: "k1wp7m", text: "" },
+  { day: 17, token: "e6hy3r", text: "" },
+  { day: 18, token: "q9dv2j", text: "" },
+  { day: 19, token: "a5nb8x", text: "" },
+  { day: 20, token: "t2mk6f", text: "4. Advent – alle Kerzen brennen! 🕯️🕯️🕯️🕯️\nNur noch vier Mal schlafen …" },
+  { day: 21, token: "v7qs4g", text: "" },
+  { day: 22, token: "j3zc9d", text: "" },
+  { day: 23, token: "x8le5p", text: "" },
+  { day: 24, token: "l4ow7y", text: "Frohe Weihnachten, mein Schatz! 🎄\nVon allen Geschenken bist du mein allerliebstes. ❤️" }
+];
+
+// Welche Nummer an welcher Stelle der Bilderwand hängt (wie beim echten Kalender durcheinander)
+const ORDER = [7,15,1,22, 11,3,18,9,24,5,13,20, 2,16,6,21,10,14,19,4, 12,23,8,17];
+// Hoch- (p) oder Querformat (l) des Fensters, wie bei den echten Rahmen
+// (Formate nicht mehr benötigt)
+const SHAPE = ["p","l","l","p", "l","p","l","p","p","l","p","l", "l","p","l","p","p","l","p","l", "p","l","l","p"];
+
+// Sprüche, wenn ein Türchen zu früh gescannt wird ({n} = Tage)
+const TEASES = [
+  ["🎅","Netter Versuch!"],
+  ["👀","Der Weihnachtsmann hat dich gesehen …"],
+  ["😏","Geduld ist auch ein Geschenk.\nLeider kein schönes."],
+  ["🧝","Zutritt verweigert!\nDie Wichtel bewachen dieses Türchen."],
+  ["🔨","Hier wird noch gebastelt.\nKomm später wieder!"],
+  ["🤫","Psst … ich verrate nichts.\nNur so viel: Es lohnt sich."],
+  ["🦌","Rudolph sagt: Nein."],
+  ["⚫","Wer schummelt, bekommt Kohle in den Stiefel!"],
+  ["😴","Dieses Türchen hält noch Winterschlaf."],
+  ["❄️","Eingefroren! Taut erst am richtigen Tag auf."]
+];
+
+/* =====================================================================
+   Ab hier: Technik
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const preview = params.get("vorschau") === CONFIG.previewKey;
+let now = new Date();
+if (preview && params.get("datum")) {            // z. B. &datum=2026-12-05 zum Testen der Sperre
+  const [y,m,d] = params.get("datum").split("-").map(Number);
+  if (y && m && d) now = new Date(y, m-1, d, 12);
+}
+const unlockAll = preview && !params.get("datum");
+const STORE = "advent-" + CONFIG.year + "-offen";
+const pad = n => String(n).padStart(2,"0");
+const doorOf = day => DOORS.find(d => d.day === day);
+const unlockDate = day => new Date(CONFIG.year, 11, day);
+const isUnlocked = day => unlockAll || now >= unlockDate(day);
+const today0 = () => new Date(now.getFullYear(), now.getMonth(), now.getDate());
+const sleeps = day => Math.round((unlockDate(day) - today0()) / 864e5);
+
+let opened = new Set();
+function loadOpened(){ if (preview) return; try { opened = new Set(JSON.parse(localStorage.getItem(STORE) || "[]")); } catch(e){} }
+function saveOpened(){ if (preview) return; try { localStorage.setItem(STORE, JSON.stringify([...opened])); } catch(e){} }
+
+/* ---------- Ersatz-Illustrationen ---------- */
+const MOTIFS = ["🎄","☕","🍪","🕯️","⛄","🦌","🎁","⭐","🧦","🔔","🏠","🛷","❄️","🎀","🧣","🌟","🍫","🎅","🕊️","🌲","✨","🍷","💫","❤️"];
+const PALS = [["#7a1f25","#c0444a"],["#123a2c","#2f7a55"],["#1a2c5b","#3d5fa8"],["#5a3a12","#b8862b"]];
+function placeholder(day){
+  const [a,b] = PALS[day % PALS.length], e = MOTIFS[(day-1) % MOTIFS.length];
+  let flakes = "";
+  for (let i=0;i<40;i++){ const x=(i*97+day*31)%400, y=(i*61+day*17)%500, r=1+((i*7)%3); flakes += `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity=".55"/>`; }
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><defs><radialGradient id="g" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="${b}"/><stop offset="1" stop-color="${a}"/></radialGradient></defs><rect width="400" height="500" fill="url(#g)"/>${flakes}<text x="200" y="285" font-size="190" text-anchor="middle">${e}</text><text x="200" y="460" font-size="26" font-family="Georgia,serif" fill="#fff" opacity=".7" text-anchor="middle">Foto folgt</text></svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+function setImg(img, day){
+  if (img.dataset.set) return;
+  img.dataset.set = 1;
+  img.onerror = () => { img.onerror = null; img.src = placeholder(day); };
+  img.src = "bilder/" + pad(day) + ".jpg";
+}
+
+/* ---------- Bilderwand aufbauen ---------- */
+const frames = {};
+function buildWall(){
+  const wall = $("wall"), pos = [];
+  for (let r=1;r<=4;r++) for (let c=1;c<=8;c++) if (!((r===1||r===4) && (c<3||c>6))) pos.push([r,c]);
+  const has = (list, r, c) => list.some(p => p[0]===r && p[1]===c);
+  const posM = pos.map(([r,c]) => [c,r]);
+  wall.style.setProperty("--tex-d", woodTexture(8, 4));
+  wall.style.setProperty("--tex-m", woodTexture(4, 8));
+  pos.forEach(([r,c], i) => {
+    const day = ORDER[i], d = doorOf(day), [mr, mc] = posM[i];
+    const f = document.createElement("div");
+    f.className = "frame" + (d.text ? " special" : "") +
+      (has(pos, r-1, c) ? "" : " td") + (has(pos, r+1, c) ? "" : " bd") +
+      (has(posM, mr-1, mc) ? "" : " tm") + (has(posM, mr+1, mc) ? "" : " bm");
+    f.style.cssText = `--r:${r};--c:${c};--mr:${mr};--mc:${mc};--sx:${(i*37)%90}px`;
+    f.innerHTML = `<div class="win"><img alt=""><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="cap"></div><div class="lights"></div><div class="ice"></div><div class="lock">🔒</div>`;
+    f.setAttribute("role","button"); f.setAttribute("aria-label","Türchen " + day);
+    f.addEventListener("click", () => tap(day));
+    if (opened.has(day) && isUnlocked(day)) { f.classList.add("open"); setImg(f.querySelector("img"), day); }
+    frames[day] = f; wall.appendChild(f);
+  });
+}
+
+function tap(day){
+  const f = frames[day];
+  if (f.classList.contains("open")) return showPhoto(day);
+  if (!isUnlocked(day)) return locked(day);
+  if (preview) return openDoor(day);
+  showNote("🎁", "Dieses Türchen öffnet sich nur mit dem QR-Code aus deinem Päckchen.", "");
+}
+
+function openDoor(day){
+  const f = frames[day];
+  if (f.classList.contains("open")) return showPhoto(day);
+  setImg(f.querySelector("img"), day);
+  const r = f.getBoundingClientRect();
+  const dr = f.querySelector(".door"), w = dr.getBoundingClientRect();
+  f.classList.add("glow");
+  dr.classList.add("poof");
+  dust(w);
+  setTimeout(() => burst(r.left + r.width/2, r.top + r.height/2), 350);
+  setTimeout(() => { f.classList.add("open"); dr.classList.remove("poof"); }, 1000);
+  opened.add(day); saveOpened();
+  setTimeout(() => f.classList.remove("glow"), 1900);
+  setTimeout(() => showPhoto(day), 1500);
+}
+
+let lastTease = -1, cdTimer = null;
+function locked(day){
+  const f = frames[day];
+  f.classList.remove("shake"); void f.offsetWidth;
+  f.classList.add("shake","show-lock");
+  setTimeout(() => f.classList.remove("show-lock"), 1600);
+  let k; do { k = Math.floor(Math.random()*TEASES.length); } while (k === lastTease && TEASES.length > 1);
+  lastTease = k;
+  setTimeout(() => showNote(TEASES[k][0], TEASES[k][1], "", day), 550);
+}
+
+/* ---------- Overlay ---------- */
+function openOverlay(which){
+  $("polaroid").classList.toggle("hidden", which !== "polaroid");
+  $("note").classList.toggle("hidden", which !== "note");
+  $("overlay").classList.add("show");
+}
+function closeOverlay(){ $("overlay").classList.remove("show"); clearInterval(cdTimer); }
+$("overlay").addEventListener("click", e => { if (e.target === $("overlay") || e.target.hasAttribute("data-close")) closeOverlay(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeOverlay(); });
+
+function showPhoto(day){
+  const d = doorOf(day), img = $("pImg");
+  img.onerror = () => { img.onerror = null; img.src = placeholder(day); };
+  img.src = "bilder/" + pad(day) + ".jpg";
+  $("pDate").textContent = day + ". Dezember";
+  $("pText").textContent = d.text || "";
+  openOverlay("polaroid");
+}
+
+function showNote(icon, msg, extra, day){
+  $("nIcon").textContent = icon;
+  $("nMsg").textContent = msg;
+  clearInterval(cdTimer);
+  const cd = $("nCd");
+  if (day){
+    const n = sleeps(day);
+    if (n <= 1){
+      const tick = () => {
+        let s = Math.max(0, Math.floor((unlockDate(day) - (preview && params.get("datum") ? now : new Date()))/1000));
+        const h = Math.floor(s/3600), m = Math.floor(s%3600/60); s = s%60;
+        cd.innerHTML = `Türchen ${day} öffnet sich in <b>${pad(h)}:${pad(m)}:${pad(s)}</b> ⏳`;
+      };
+      tick(); cdTimer = setInterval(tick, 1000);
+    } else {
+      cd.innerHTML = `Türchen ${day} öffnet sich am ${day}. Dezember –<br>noch <b>${n} Mal</b> schlafen 💤`;
+    }
+  } else cd.textContent = extra;
+  openOverlay("note");
+}
+
+/* ---------- Untertitel ---------- */
+function subtitle(){
+  const s = $("sub"), d1 = unlockDate(1);
+  if (now < d1){ const n = sleeps(1); s.textContent = n === 1 ? "Morgen geht's los! ✨" : `Noch ${n} Mal schlafen bis zum ersten Türchen ✨`; }
+  else if (now < unlockDate(25)) s.textContent = `Heute ist der ${now.getDate()}. Dezember – Türchen ${now.getDate()} wartet auf dich ✨`;
+  else s.textContent = "Frohe Weihnachten! ❤️";
+}
+
+/* ---------- Schnee-, Eiszapfen- und Kabel-Grafiken ---------- */
+(function decorations(){
+  const u = svg => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  const root = document.documentElement.style;
+  root.setProperty("--snowcap", u(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 30" preserveAspectRatio="none"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#eef4fb"/><stop offset="1" stop-color="#c9d7ea"/></linearGradient></defs><path d="M0,14 Q0,3 9,4 Q30,1 50,3 Q72,1 91,4 Q100,3 100,14 Q93,22 85,16 Q79,27 69,18 Q60,24 51,17 Q41,28 31,17 Q22,23 14,16 Q6,24 0,14Z" fill="url(#g)"/></svg>`));
+  root.setProperty("--icicles", u(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 24" preserveAspectRatio="none"><defs><linearGradient id="i" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#bcd6f2" stop-opacity=".35"/></linearGradient></defs><rect width="60" height="3" fill="#f3f8fd"/><path d="M2,2 L4,15 L6,2 M9,2 L11,22 L13,2 M17,2 L18.5,9 L20,2 M24,2 L26,18 L28,2 M33,2 L34.5,8 L36,2 M39,2 L41,21 L43,2 M47,2 L48.5,11 L50,2 M54,2 L56,16 L58,2" fill="url(#i)"/></svg>`));
+  root.setProperty("--wire", u(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 16" preserveAspectRatio="none"><path d="M0,5 Q20,15 40,5" stroke="#1e130b" stroke-width="1.3" fill="none"/></svg>`));
+})();
+
+/* ---------- Holzstruktur der roten Wand (zusammenhängend über alle Rahmen) ---------- */
+function woodTexture(cols, rows){
+  const U = 120, cw = cols*U, ch = Math.round(rows*U*1.2);
+  const c = document.createElement("canvas"); c.width = cw; c.height = ch; const g = c.getContext("2d");
+  let seed = cols*31 + rows;
+  const r = () => { seed = (seed*16807) % 2147483647; return (seed-1)/2147483646; };
+  const ph = 34;
+  for (let y=0; y<ch; y+=ph){
+    const R = 138 + r()*28, G = 32 + r()*10, B = 28 + r()*8;
+    g.fillStyle = `rgb(${R|0},${G|0},${B|0})`; g.fillRect(0, y, cw, ph);
+    for (let i=0;i<26;i++){                             // Maserung
+      const yy = y + r()*ph, a = .05 + r()*.14;
+      g.strokeStyle = r() < .7 ? `rgba(50,8,6,${a})` : `rgba(255,190,170,${a*.6})`;
+      g.lineWidth = .6 + r()*1.2; g.beginPath(); g.moveTo(0, yy);
+      const f = 80 + r()*200, amp = r()*2.5, off = r()*9;
+      for (let x=0;x<=cw;x+=12) g.lineTo(x, yy + Math.sin(x/f + off)*amp);
+      g.stroke();
+    }
+    const sh = g.createLinearGradient(0, y, 0, y+ph);       // Wölbung des Bretts
+    sh.addColorStop(0, "rgba(255,210,190,.10)"); sh.addColorStop(.5, "rgba(0,0,0,0)"); sh.addColorStop(1, "rgba(20,0,0,.28)");
+    g.fillStyle = sh; g.fillRect(0, y, cw, ph);
+    g.fillStyle = "rgba(25,4,3,.85)"; g.fillRect(0, y, cw, 2);   // Fuge
+    let x = r()*300;                                             // Stoßfugen + Nägel
+    while (x < cw){ g.fillRect(x, y, 2, ph);
+      g.fillStyle = "rgba(30,20,15,.8)"; g.beginPath(); g.arc(x+7, y+ph/2, 1.8, 0, 6.3); g.arc(x-5, y+ph/2, 1.8, 0, 6.3); g.fill();
+      g.fillStyle = "rgba(25,4,3,.85)"; x += 260 + r()*420; }
+  }
+  const n = Math.round(cw*ch/900);                               // abgeplatzte Farbe
+  for (let i=0;i<n;i++){
+    const x = r()*cw, y0 = Math.floor(r()*ch/ph)*ph, edge = r() < .65, y = edge ? y0 + (r()<.5 ? 2 + r()*4 : ph - 2 - r()*4) : y0 + r()*ph;
+    const s = 1 + r()*r()*7;
+    g.fillStyle = `rgba(${190+r()*40|0},${150+r()*30|0},${105+r()*25|0},${.35+r()*.45})`;
+    g.beginPath(); g.moveTo(x, y);
+    for (let k=0;k<6;k++){ const a = k/6*6.283, rr = s*(.4 + r()*.9); g.lineTo(x + Math.cos(a)*rr*1.8, y + Math.sin(a)*rr*.7); }
+    g.closePath(); g.fill();
+  }
+  for (let i=0;i<cw*ch/5000;i++){                                // Kratzer
+    const x = r()*cw, y = r()*ch, l = 6 + r()*30;
+    g.strokeStyle = `rgba(230,190,150,${.12+r()*.2})`; g.lineWidth = .7;
+    g.beginPath(); g.moveTo(x, y); g.lineTo(x + l, y + (r()-.5)*3); g.stroke();
+  }
+  return `url(${c.toDataURL("image/jpeg", .86)})`;
+}
+
+/* ---------- Winterlandschaft ---------- */
+(function scene(){
+  let seed = 11;
+  const rnd = () => { seed = (seed*16807) % 2147483647; return (seed-1)/2147483646; };
+  const W = 1600, H = 1000;
+  const ridge = x => 400 + 35*Math.sin(x/260) + 22*Math.sin(x/97 + 1);
+  const mid   = x => 570 + 50*Math.sin(x/330 + 2) + 16*Math.sin(x/120);
+  const near  = x => 795 + 12*Math.sin(x/400 + .5);
+  const curve = (f, y2) => { let d = `M0,${y2} L0,${f(0).toFixed(1)}`; for (let x=0;x<=W;x+=20) d += ` L${x},${f(x).toFixed(1)}`; return d + ` L${W},${y2}Z`; };
+
+  function fir(x, y, h, col, snow){
+    const w = h*.4, f = v => v.toFixed(1), tiers = [];
+    for (let t=0;t<6;t++){
+      const top = y - h + t*h*.14, bot = y - h*.66 + t*h*.13, ww = w*(.3 + t*.15);
+      let s = `<path d="M${f(x)},${f(top)} L${f(x-ww)},${f(bot)} Q${f(x)},${f(bot-h*.035)} ${f(x+ww)},${f(bot)}Z" fill="${col}"/>`;
+      if (snow) s += `<path d="M${f(x)},${f(top+1)} L${f(x-ww*.88)},${f(bot-h*.03)} Q${f(x-ww*.5)},${f(bot-h*.07)} ${f(x-ww*.2)},${f(bot-h*.045)} Q${f(x+ww*.05)},${f(bot-h*.08)} ${f(x+ww*.35)},${f(bot-h*.05)} Q${f(x+ww*.6)},${f(bot-h*.065)} ${f(x+ww*.85)},${f(bot-h*.035)}Z" fill="#e9f0f9" opacity="${snow}"/>`;
+      tiers.push(s);
+    }
+    return `<rect x="${f(x-h*.025)}" y="${f(y-h*.12)}" width="${f(h*.05)}" height="${f(h*.13)}" fill="#1a1410"/>` + tiers.reverse().join("");
+  }
+  function bare(x, y, h, col){
+    let out = "";
+    const br = (x1,y1,len,ang,depth) => {
+      if (depth > 4 || len < 4) return;
+      const x2 = x1 + Math.cos(ang)*len, y2 = y1 + Math.sin(ang)*len;
+      out += `<path d="M${x1.toFixed(1)},${y1.toFixed(1)} L${x2.toFixed(1)},${y2.toFixed(1)}" stroke="${col}" stroke-width="${Math.max(.5, 3-depth*.65)}" stroke-linecap="round"/>`;
+      const n = 2 + (rnd() > .5 ? 1 : 0);
+      for (let i=0;i<n;i++) br(x2, y2, len*(.55+rnd()*.2), ang + (rnd()-.5)*1.3, depth+1);
+    };
+    br(x, y, h*.38, -Math.PI/2 + (rnd()-.5)*.2, 0);
+    return out;
+  }
+  const WARM = ["#ffd36b","#ffe9a8","#ffb347","#fff3c4","#ffcc80"];
+  function xmasTree(x, y, h){
+    let s = `<ellipse cx="${x}" cy="${y-h*.45}" rx="${h*.7}" ry="${h*.7}" fill="url(#glowG)" opacity=".7"/>` + fir(x, y, h, "#13301f", .5);
+    for (let i=0;i<Math.round(h*.9);i++){
+      const t = rnd(), yy = y - h*.92 + t*h*.82, half = (h*.4)*(.1 + t*.85)*.9;
+      const xx = x + (rnd()*2 - 1)*half, c = WARM[i % WARM.length], rr = 1.1 + rnd()*1.1;
+      s += `<g class="bulb" style="animation-delay:${(rnd()*2.6).toFixed(2)}s"><circle cx="${xx.toFixed(1)}" cy="${yy.toFixed(1)}" r="${(rr*3.4).toFixed(1)}" fill="${c}" opacity=".3"/><circle cx="${xx.toFixed(1)}" cy="${yy.toFixed(1)}" r="${rr.toFixed(1)}" fill="#fffbe8"/></g>`;
+    }
+    return s + `<circle cx="${x}" cy="${y-h-2}" r="3.4" fill="#fff3c0"/><circle cx="${x}" cy="${y-h-2}" r="13" fill="#ffe9a0" opacity=".35"/>`;
+  }
+  function eaveLights(x1, y1, x2, y2){
+    let s = ""; const n = Math.round(Math.hypot(x2-x1, y2-y1)/9);
+    for (let i=0;i<=n;i++){ const t = i/n, x = x1 + (x2-x1)*t, y = y1 + (y2-y1)*t + Math.sin(t*Math.PI*n/3)*1.5;
+      s += `<g class="bulb" style="animation-delay:${(i%5)*.5}s"><circle cx="${x.toFixed(1)}" cy="${(y+2).toFixed(1)}" r="4.5" fill="#ffc65a" opacity=".35"/><circle cx="${x.toFixed(1)}" cy="${(y+2).toFixed(1)}" r="1.4" fill="#fff6d0"/></g>`; }
+    return s;
+  }
+  const win = (x,y,w,h) => `<ellipse cx="${x+w/2}" cy="${y+h/2}" rx="${w*2.8}" ry="${h*2}" fill="url(#glowG)"/><rect x="${x-1.5}" y="${y-1.5}" width="${w+3}" height="${h+3}" fill="#2a1a10"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#winG)"/><path d="M${x+w/2},${y} V${y+h} M${x},${y+h/2} H${x+w}" stroke="#4a2e14" stroke-width="1.4"/>`;
+
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070f22"/><stop offset=".4" stop-color="#1a2c4f"/><stop offset="1" stop-color="#3f5a85"/></linearGradient>
+    <linearGradient id="farG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7f93b5"/><stop offset="1" stop-color="#3b5075"/></linearGradient>
+    <linearGradient id="midG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b4c4dc"/><stop offset="1" stop-color="#6d84a8"/></linearGradient>
+    <linearGradient id="nearG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d5e0ee"/><stop offset="1" stop-color="#94a9c8"/></linearGradient>
+    <linearGradient id="driftG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1f5fb"/><stop offset="1" stop-color="#a8bcd8"/></linearGradient>
+    <linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c3d2e6"/></linearGradient>
+    <linearGradient id="fogG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8d6ea" stop-opacity="0"/><stop offset=".5" stop-color="#c8d6ea" stop-opacity=".25"/><stop offset="1" stop-color="#c8d6ea" stop-opacity="0"/></linearGradient>
+    <linearGradient id="winG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6a4"/><stop offset="1" stop-color="#f0a33a"/></linearGradient>
+    <radialGradient id="glowG"><stop offset="0" stop-color="#ffcf70" stop-opacity=".5"/><stop offset="1" stop-color="#ffcf70" stop-opacity="0"/></radialGradient>
+    <radialGradient id="spillG"><stop offset="0" stop-color="#ffd98a" stop-opacity=".45"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient>
+    <radialGradient id="moonG" cx="40%" cy="38%"><stop offset="0" stop-color="#ffffff"/><stop offset=".7" stop-color="#f4f1e4"/><stop offset="1" stop-color="#dcd7c2"/></radialGradient>
+    <radialGradient id="haloG"><stop offset="0" stop-color="#e8efff" stop-opacity=".6"/><stop offset="1" stop-color="#dfe8ff" stop-opacity="0"/></radialGradient>
+    <radialGradient id="vigG" cx="50%" cy="55%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></radialGradient>
+    <pattern id="woodP" width="40" height="7" patternUnits="userSpaceOnUse"><rect width="40" height="7" fill="#4a3022"/><rect y="6" width="40" height="1" fill="#24160d"/><rect x="${0}" y="2" width="22" height=".6" fill="#5e3d2a"/></pattern>
+    <filter id="blur12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+    <filter id="blur4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#skyG)"/>`;
+  for (let i=0;i<120;i++) svg += `<circle cx="${(rnd()*W).toFixed(0)}" cy="${(rnd()*330).toFixed(0)}" r="${(.4+rnd()*1.1).toFixed(1)}" fill="#fff" opacity="${(.3+rnd()*.6).toFixed(2)}"/>`;
+  // Mond + Wolken
+  svg += `<circle cx="380" cy="135" r="160" fill="url(#haloG)"/><circle cx="380" cy="135" r="44" fill="url(#moonG)"/>
+  <g fill="#b7b29c" opacity=".35"><circle cx="366" cy="122" r="9"/><circle cx="395" cy="148" r="6"/><circle cx="372" cy="155" r="4"/><circle cx="399" cy="118" r="5"/></g>
+  <g filter="url(#blur12)" opacity=".75">
+    <ellipse cx="250" cy="200" rx="230" ry="38" fill="#4a5f86"/><ellipse cx="520" cy="170" rx="200" ry="30" fill="#55698f"/>
+    <ellipse cx="420" cy="215" rx="160" ry="24" fill="#8fa2c4"/><ellipse cx="1150" cy="140" rx="280" ry="40" fill="#3c4f74"/>
+    <ellipse cx="1350" cy="230" rx="260" ry="34" fill="#46597d"/><ellipse cx="80" cy="120" rx="160" ry="28" fill="#3a4c70"/>
+  </g>
+  <path d="${curve(ridge, H)}" fill="url(#farG)"/>`;
+  for (let x=-10;x<W+10;x+=5+rnd()*8){ const h = 16 + rnd()*30; svg += fir(x, ridge(x) + 8, h, "#1c2b45", .25); }
+  svg += `<rect x="0" y="400" width="${W}" height="200" fill="url(#fogG)"/>
+  <path d="${curve(mid, H)}" fill="url(#midG)"/>`;
+  for (let i=0;i<22;i++){ const x = 300 + rnd()*900; if (x > 560 && x < 1120 && rnd() < .7) continue; svg += bare(x, mid(x) + 4, 60 + rnd()*70, "#36435d"); }
+  for (let x=1000;x<W+20;x+=11+rnd()*16){ const h = 80 + rnd()*120 + (x-1000)*.1; svg += fir(x, mid(x) + 14 + rnd()*30, h, rnd()<.5 ? "#132132" : "#17283a", .6); }
+  for (let x=-20;x<420;x+=12+rnd()*18){ const h = 60 + rnd()*100; svg += fir(x, mid(x) + 16 + rnd()*24, h, "#152437", .6); }
+  svg += `<rect x="0" y="600" width="${W}" height="200" fill="url(#fogG)"/>
+  <path d="${curve(near, H)}" fill="url(#nearG)"/>
+  <ellipse cx="880" cy="818" rx="360" ry="55" fill="url(#spillG)"/>`;
+  // Rauch
+  svg += `<g class="smoke" filter="url(#blur4)">`;
+  for (let i=0;i<7;i++) svg += `<circle cx="938" cy="630" r="10" fill="#d5dcea" style="animation-delay:${i}s"/>`;
+  svg += `</g>`;
+  // Nebengebäude
+  svg += `<rect x="640" y="738" width="190" height="66" fill="url(#woodP)"/>
+  <polygon points="620,742 662,690 820,690 846,742" fill="url(#roofG)"/>
+  <path d="M620,742 L846,742" stroke="#8193b0" stroke-width="3"/>` + win(686,758,15,19) + win(735,758,15,19) + eaveLights(624,744,842,744);
+  // Hauptgebäude
+  svg += `<rect x="830" y="712" width="232" height="94" fill="url(#woodP)"/>
+  <polygon points="1062,712 1062,806 1096,806 1096,712" fill="#3a251a"/>
+  <polygon points="1062,712 1079,664 1096,712" fill="#3a251a"/>
+  <rect x="928" y="626" width="20" height="34" fill="#4b4b52"/><rect x="925" y="620" width="26" height="9" fill="#f3f7fc"/>
+  <polygon points="808,717 854,648 1079,648 1079,664 1062,717" fill="url(#roofG)"/>
+  <polygon points="1079,648 1104,715 1095,717 1079,670" fill="#dbe5f2"/>
+  <path d="M808,717 L1064,717" stroke="#8193b0" stroke-width="3"/>` +
+  win(868,738,18,24) + win(962,738,18,24) + win(1071,728,13,19) + win(1028,760,18,24) +
+  eaveLights(812,720,1060,720) + eaveLights(1079,650,1102,713);
+  // Anbau
+  svg += `<rect x="880" y="774" width="128" height="34" fill="url(#woodP)"/>
+  <polygon points="866,777 884,752 1006,752 1020,777" fill="url(#roofG)"/>`;
+  svg += xmasTree(790, 816, 86) + xmasTree(1022, 828, 112);
+  // Zaun
+  for (let i=0;i<6;i++){ const x = 470 + i*30, y = 816 - i*4; svg += `<rect x="${x}" y="${y-24}" width="4.5" height="27" fill="#2a1c13"/><rect x="${x-1}" y="${y-27}" width="6.5" height="4" rx="2" fill="#eef3fa"/>`; }
+  svg += `<path d="M470,800 L627,780 M470,810 L627,790" stroke="#2a1c13" stroke-width="2.6"/><path d="M470,798 L627,778" stroke="#eef3fa" stroke-width="1.6"/>`;
+  // große verschneite Tannen vorne links/rechts
+  svg += fir(1390, 905, 400, "#0f1d2c", .7) + fir(1510, 925, 470, "#122233", .7) + fir(1600, 900, 380, "#0f1d2c", .7);
+  svg += fir(60, 910, 380, "#122233", .7) + fir(180, 925, 300, "#0f1d2c", .7);
+  // Schneeverwehungen + Gräser
+  svg += `<path d="M0,870 C200,845 380,880 600,866 C820,852 1000,884 1200,868 C1380,856 1500,876 1600,866 L1600,1000 L0,1000Z" fill="url(#driftG)"/>
+  <path d="M0,930 C150,905 330,940 520,922 C700,906 880,945 1100,925 C1300,908 1460,935 1600,920 L1600,1000 L0,1000Z" fill="#e6edf6"/>
+  <path d="M0,930 C150,905 330,940 520,922 C700,906 880,945 1100,925 C1300,908 1460,935 1600,920" stroke="#b5c6dd" stroke-width="3" fill="none" opacity=".6"/>`;
+  for (let i=0;i<80;i++){
+    const x = rnd()*W, y = 890 + rnd()*100, h = 25 + rnd()*70, lean = (rnd()-.5)*30;
+    svg += `<path d="M${x.toFixed(0)},${y.toFixed(0)} q${(lean/2).toFixed(0)},${(-h/2).toFixed(0)} ${lean.toFixed(0)},${(-h).toFixed(0)}" stroke="#4a4237" stroke-width="${(.6+rnd()).toFixed(1)}" fill="none" opacity=".65"/>`;
+  }
+  svg += `<rect width="${W}" height="${H}" fill="url(#vigG)"/></svg>`;
+  $("sky").innerHTML = svg;
+
+  // Optional: eigenes Hintergrundbild "bilder/hintergrund.jpg" ersetzt die Zeichnung
+  const bg = new Image();
+  bg.onload = () => { const s = $("sky"); s.style.background = `url(${bg.src}) center bottom / cover no-repeat`; s.querySelector("svg").style.display = "none"; };
+  bg.src = "bilder/hintergrund.jpg";
+})();
+
+/* ---------- Realistischer Schnee: drei Tiefenebenen + Wind ---------- */
+(function snow(){
+  const back = $("snow"), front = $("snowFront");
+  const bx = back.getContext("2d"), fxx = front.getContext("2d");
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const sprite = (soft) => {
+    const c = document.createElement("canvas"); c.width = c.height = 64; const g = c.getContext("2d");
+    const gr = g.createRadialGradient(32,32,0,32,32,32);
+    gr.addColorStop(0, "rgba(255,255,255,1)");
+    gr.addColorStop(soft ? .15 : .3, "rgba(255,255,255,.85)");
+    gr.addColorStop(soft ? .6 : .55, "rgba(240,246,255,.25)");
+    gr.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = gr; g.fillRect(0,0,64,64); return c;
+  };
+  const SP = sprite(false), SOFT = sprite(true);
+  let W, H, flakes = [], bokeh = [];
+  const mk = (top) => { const z = .12 + Math.pow(Math.random(), 1.6) * .88;
+    return { x: Math.random()*W, y: top ? -10 : Math.random()*H, z, r: .5 + z*z*3.4, vy: .35 + z*1.7, ph: Math.random()*6.28, sw: .2 + Math.random()*.6, a: .3 + z*.65 }; };
+  const mkB = (top) => ({ x: Math.random()*W, y: top ? -40 : Math.random()*H, r: 7 + Math.random()*10, vy: 2.4 + Math.random()*1.6, ph: Math.random()*6.28, a: .12 + Math.random()*.2 });
+  function size(){
+    W = innerWidth; H = innerHeight;
+    for (const c of [back, front]){ c.width = W*dpr; c.height = H*dpr; c.style.width = W+"px"; c.style.height = H+"px"; }
+    bx.setTransform(dpr,0,0,dpr,0,0); fxx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.min(520, Math.round(W*H/2100));
+    while (flakes.length < n) flakes.push(mk(false)); flakes.length = n;
+    const m = Math.max(8, Math.round(W/70));
+    while (bokeh.length < m) bokeh.push(mkB(false)); bokeh.length = m;
+  }
+  let last = performance.now();
+  function loop(t){
+    const k = Math.min(3, (t - last) / 16.67); last = t;
+    const wind = .55 + .7*Math.sin(t/5200) + .35*Math.sin(t/1700 + 1) + .25*Math.sin(t/610 + 2);
+    bx.clearRect(0,0,W,H);
+    for (const f of flakes){
+      f.ph += .02*k;
+      const vx = wind*(.3 + f.z*1.6) + Math.sin(f.ph)*f.sw*f.z;
+      f.x += vx*k; f.y += f.vy*k;
+      if (f.y > H + 10){ Object.assign(f, mk(true)); }
+      if (f.x > W + 10) f.x -= W + 20; else if (f.x < -10) f.x += W + 20;
+      bx.globalAlpha = f.a;
+      const d = f.r*4;
+      if (f.z > .72){
+        const sp = Math.hypot(vx, f.vy), len = d*(1 + sp*.18);
+        bx.save(); bx.translate(f.x, f.y); bx.rotate(Math.atan2(f.vy, vx) - Math.PI/2);
+        bx.drawImage(SP, -d/2, -len/2, d, len); bx.restore();
+      } else bx.drawImage(SP, f.x - d/2, f.y - d/2, d, d);
+    }
+    fxx.clearRect(0,0,W,H);
+    for (const b of bokeh){
+      b.ph += .015*k;
+      b.x += (wind*2.6 + Math.sin(b.ph)*.8)*k; b.y += b.vy*k;
+      if (b.y > H + 40){ Object.assign(b, mkB(true)); }
+      if (b.x > W + 40) b.x -= W + 80; else if (b.x < -40) b.x += W + 80;
+      fxx.globalAlpha = b.a; const d = b.r*4;
+      fxx.drawImage(SOFT, b.x - d/2, b.y - d/2, d, d);
+    }
+    requestAnimationFrame(loop);
+  }
+  addEventListener("resize", size); size(); requestAnimationFrame(loop);
+})();
+
+/* ---------- Weihnachtsmagie (Funken) ---------- */
+const fx = $("fx"), fc = fx.getContext("2d"); let parts = [], fxRun = false;
+function fxSize(){ const dpr = Math.min(devicePixelRatio||1,2); fx.width = innerWidth*dpr; fx.height = innerHeight*dpr; fx.style.width = innerWidth+"px"; fx.style.height = innerHeight+"px"; fc.setTransform(dpr,0,0,dpr,0,0); }
+addEventListener("resize", fxSize); fxSize();
+const COLS = ["#fff6d5","#ffd970","#ffe9a8","#ffffff","#ffc6d0","#f6c453"];
+function burst(cx, cy){
+  for (let i=0;i<70;i++){
+    const a = Math.random()*6.283, sp = 1.5+Math.random()*5.5;
+    parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.8,l:1,d:.007+Math.random()*.014,s:1.5+Math.random()*3.5,c:COLS[i%COLS.length],rot:Math.random()*6,g:.045});
+  }
+  let k = 0; const t = setInterval(() => {                     // aufsteigender Sternenstaub
+    for (let i=0;i<8;i++) parts.push({x:cx+(Math.random()-.5)*60,y:cy+20,vx:(Math.random()-.5)*.6,vy:-1-Math.random()*1.6,l:1,d:.012+Math.random()*.01,s:1+Math.random()*2.5,c:COLS[(i+k)%COLS.length],rot:0,g:-.005});
+    if (++k > 14) clearInterval(t);
+  }, 60);
+  if (!fxRun){ fxRun = true; requestAnimationFrame(fxLoop); }
+}
+function dust(w){                                        // Tür zerfällt in Staub, von oben nach unten
+  const DC = ["#fdf8ea","#f3e6c8","#ffe9a8","#ffd970","#ffffff","#e8c46a"];
+  let k = 0; const t = setInterval(() => {
+    for (let i=0;i<26;i++){
+      const y = w.top + (k/9 + Math.random()/9) * w.height;
+      parts.push({x:w.left+Math.random()*w.width,y:Math.min(y,w.bottom),vx:(Math.random()-.5)*1.4,vy:-.3-Math.random()*1.5,l:1,d:.01+Math.random()*.015,s:.7+Math.random()*2.2,c:DC[(i+k)%DC.length],rot:Math.random()*6,g:-.012});
+    }
+    if (!fxRun){ fxRun = true; requestAnimationFrame(fxLoop); }
+    if (++k > 9) clearInterval(t);
+  }, 55);
+}
+function star4(x,y,s,rot){
+  fc.save(); fc.translate(x,y); fc.rotate(rot); fc.beginPath();
+  for (let i=0;i<8;i++){ const r = i%2 ? s*.35 : s*1.6, a = i*Math.PI/4; fc.lineTo(Math.cos(a)*r, Math.sin(a)*r); }
+  fc.closePath(); fc.fill(); fc.restore();
+}
+function fxLoop(){
+  fc.clearRect(0,0,innerWidth,innerHeight);
+  fc.shadowBlur = 10; fc.shadowColor = "#ffd970";
+  parts = parts.filter(p => p.l > 0);
+  for (const p of parts){
+    p.vy += p.g; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.l -= p.d; p.rot += .08;
+    fc.globalAlpha = Math.max(0, p.l); fc.fillStyle = p.c;
+    star4(p.x, p.y, p.s, p.rot);
+  }
+  if (parts.length) requestAnimationFrame(fxLoop); else { fxRun = false; fc.clearRect(0,0,innerWidth,innerHeight); }
+}
+
+/* ---------- Start ---------- */
+loadOpened(); buildWall(); subtitle();
+if (preview){
+  const b = document.createElement("div"); b.className = "preview-banner";
+  b.textContent = unlockAll ? "Vorschau-Modus – alle Türchen offen, nichts wird gespeichert" : "Vorschau-Modus – simuliertes Datum: " + now.toLocaleDateString("de-DE");
+  document.body.appendChild(b);
+}
+const tok = params.get("t");
+if (tok){
+  const d = DOORS.find(x => x.token === tok);
+  if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
+  if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
+  else {
+    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 400);
+    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 1200);
+  }
+}
+</script>
+</body>
+</html>
