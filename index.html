@@ -365,7 +365,7 @@ function buildWall(){
     im.onload = () => ok(im.src); im.onerror = () => tryImg(names.slice(1), ok); im.src = names[0]; };
   tryImg(["bilder/holz.jpg","bilder/holz.png"], src => {
     wall.style.setProperty("--tex-d", `url(${src})`); wall.style.setProperty("--tex-m", `url(${src})`);
-    wall.style.setProperty("--tsd", "calc(var(--cell) * 8) auto"); wall.style.setProperty("--tsm", "calc(var(--cell) * 8) auto");
+    wall.style.setProperty("--tsd", "calc(var(--cell) * 5) auto"); wall.style.setProperty("--tsm", "calc(var(--cell) * 5) auto");
   });
   // bilder/schnee.png = Schneekante, bilder/eis.png = Eiszapfen (jeweils mit transparentem Hintergrund)
   tryImg(["bilder/schnee.png"], src => { wall.style.setProperty("--snowcap-img", `url(${src})`); wall.style.setProperty("--capsize", "auto 100%"); wall.classList.add("photo-snow"); });
