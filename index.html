@@ -46,13 +46,36 @@
     background-size:var(--tsd, calc(var(--cell) * 8) calc(var(--cell) * 4.8));
     background-position:calc(var(--cell) * (1 - var(--c))) calc(var(--cell) * 1.2 * (1 - var(--r)));
   }
-  .win{position:absolute;inset:var(--inset);background:#24160d;border-radius:calc(var(--cell) * .07);
-    box-shadow:inset 0 4px 10px rgba(0,0,0,.85),0 0 calc(var(--cell) * .05) calc(var(--cell) * .015) rgba(40,5,2,.45)}
-  .win::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .6s .4s;
-    box-shadow:inset 0 0 calc(var(--cell) * .07) calc(var(--cell) * .03) rgba(35,10,4,.8),inset 0 3px 6px rgba(0,0,0,.6)}
-  .frame.open .win::after{opacity:1}
-  .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;opacity:0;transition:opacity .7s .35s}
-  .frame.open .win img{opacity:1}
+  .win{position:absolute;inset:var(--inset);border-radius:calc(var(--cell) * .05);perspective:calc(var(--cell) * 3.2);
+    background:
+      repeating-linear-gradient(90deg,rgba(60,30,10,.18) 0 1px,transparent 1px 7px),
+      linear-gradient(180deg,#6b4526,#4a2e18 70%,#3a2312);
+    box-shadow:inset 0 0 calc(var(--cell) * .1) calc(var(--cell) * .03) rgba(10,4,0,.85),inset 0 calc(var(--cell) * .05) calc(var(--cell) * .06) rgba(0,0,0,.7),
+      0 0 calc(var(--cell) * .05) calc(var(--cell) * .015) rgba(40,5,2,.45);
+    transition:box-shadow 1s .3s}
+  .win::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity 1s .35s;z-index:1;
+    background:radial-gradient(ellipse 85% 70% at 50% 4%,rgba(255,214,140,.75),rgba(255,170,80,.25) 45%,rgba(255,150,60,0) 75%)}
+  .bulb-in{position:absolute;left:50%;top:calc(var(--cell) * .015);width:calc(var(--cell) * .13);height:calc(var(--cell) * .045);transform:translateX(-50%);
+    border-radius:0 0 99px 99px;background:linear-gradient(180deg,#6a5236,#3b2c1c);z-index:2}
+  .bulb-in::after{content:"";position:absolute;left:20%;right:20%;bottom:-35%;height:70%;border-radius:50%;background:#7a6a50;transition:all .6s .3s}
+  .frame.open .bulb-in::after{background:radial-gradient(circle,#fffbe6,#ffd27a 60%,#f0a040);box-shadow:0 0 calc(var(--cell) * .08) calc(var(--cell) * .04) rgba(255,205,120,.9)}
+  .frame.open .win::before{opacity:1}
+  .frame.open .win{box-shadow:inset 0 0 calc(var(--cell) * .1) calc(var(--cell) * .03) rgba(10,4,0,.6),inset 0 calc(var(--cell) * .05) calc(var(--cell) * .06) rgba(0,0,0,.45),
+      0 0 calc(var(--cell) * .22) calc(var(--cell) * .05) rgba(255,170,70,.35)}
+  .print{position:absolute;left:50%;top:56%;width:72%;padding:5% 5% 0;z-index:2;cursor:zoom-in;
+    background:linear-gradient(155deg,#ffffff,#f4f2ec 60%,#e9e6de);box-shadow:0 1px 1px rgba(0,0,0,.3),0 calc(var(--cell) * .03) calc(var(--cell) * .06) rgba(0,0,0,.55);
+    transform:translate(-50%,-50%) rotate(-2.5deg) scale(.9);opacity:0;transition:opacity .8s .55s,transform 1s .55s cubic-bezier(.3,1.3,.5,1)}
+  .frame.open .print{opacity:1;transform:translate(-50%,-50%) rotate(-2.5deg) scale(1)}
+  .print img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#bbb}
+  .print .pt{font-family:"Playfair Display",Georgia,serif;font-weight:900;color:#111;text-align:center;font-size:calc(var(--cell) * .072);line-height:1;padding:9% 0 10%;white-space:nowrap;overflow:hidden}
+  .deko{position:absolute;left:-4%;bottom:-2%;width:46%;height:42%;z-index:3;background:var(--deko) left bottom/contain no-repeat;opacity:0;transition:opacity .8s .8s;pointer-events:none;display:none}
+  .wall.has-deko .deko{display:block}
+  .wall.has-fach .win{background:var(--fach) center / cover no-repeat}
+  .wall.has-fach .win::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(8,4,2,.6);z-index:1;pointer-events:none;transition:opacity 1.2s .3s}
+  .wall.has-fach .frame.open .win::after{opacity:0}
+  .wall.has-fach .bulb-in{display:none}
+  .wall.has-fach .win::before{background:radial-gradient(ellipse 85% 60% at 50% 4%,rgba(255,214,140,.25),rgba(255,170,80,0) 70%)}
+  .frame.open .deko{opacity:1}
 
   @keyframes wallIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
   /* Schneehauben, Eiszapfen, Lichterkette */
@@ -99,8 +122,10 @@
   .frame.special .num{background:linear-gradient(180deg,#c99a3c,#7a5216 55%,#b98a30);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
   .frame.special::after{content:"✨";position:absolute;top:calc(var(--cell) * .12);right:calc(var(--cell) * .07);font-size:calc(var(--cell) * .16);filter:drop-shadow(0 0 3px rgba(255,220,120,.8));z-index:9}
   .frame.open::after{display:none}
+  .frame.focus{z-index:10}
   .door.poof{animation:poof 1s ease-in forwards;pointer-events:none}
   @keyframes poof{0%{opacity:1;filter:brightness(1)}25%{opacity:1;filter:brightness(1.5) drop-shadow(0 0 8px #ffd970);transform:scale(1.03)}100%{opacity:0;filter:brightness(2.4) blur(7px);transform:scale(1.12) translateY(-6px)}}
+  .door{z-index:4}
   .frame.open .door{display:none}
   .wall.photo-door .door{background:var(--door-img) center / 100% 100% no-repeat;border:0;box-shadow:none;filter:drop-shadow(2px 4px 4px rgba(0,0,0,.6));justify-content:flex-start;padding-top:calc(var(--cell) * .47)}
   .wall.photo-door .door::before,.wall.photo-door .door::after,.wall.photo-door .orn{display:none}
@@ -113,6 +138,22 @@
   .lock{position:absolute;left:50%;top:50%;z-index:9;font-size:calc(var(--cell) * .38);transform:translate(-50%,-50%) scale(0);transition:transform .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
   .frame.show-lock .lock{transform:translate(-50%,-50%) scale(1)}
 
+  /* Kamerafahrt */
+  #cam{transition:transform 1.5s cubic-bezier(.6,0,.25,1);transform-origin:0 0}
+  body.zoomed{overflow:hidden;touch-action:none}
+  h1,.tagline{transition:opacity .8s .4s}
+  body.zoomed h1,body.zoomed .tagline{opacity:0;transition:opacity .6s}
+  .sky{transition:transform 1.6s cubic-bezier(.6,0,.25,1)}
+  body.zoomed .sky{transform:scale(1.08)}
+  body.zoomed .frame:not(.focus){pointer-events:none}
+  #zoomUI{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));z-index:20;display:flex;flex-direction:column;align-items:center;gap:12px;
+    padding:0 16px;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .5s,transform .5s}
+  #zoomUI.show{opacity:1;transform:none;pointer-events:auto}
+  #zText{max-width:440px;background:linear-gradient(155deg,#fffdf7,#f1ede3);color:#222;padding:12px 18px;border-radius:3px;text-align:center;
+    font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:16px;line-height:1.4;white-space:pre-line;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  #zText:empty{display:none}
+  #zBack{background:rgba(20,12,8,.75);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:10px 22px;font-size:15px;font-weight:600;cursor:pointer;
+    -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   /* Holzschild */
   .hint{position:relative;margin-top:40px;font-family:Kalam,Caveat,cursive;font-size:clamp(15px,3.6vw,19px);color:#f7ecd6;text-align:center;max-width:460px;line-height:1.45;
     padding:12px 26px 13px;border-radius:20px;border:3px solid #1c120b;
@@ -137,13 +178,24 @@
   .overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:20px;
     background:rgba(4,9,24,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;pointer-events:none;transition:opacity .35s}
   .overlay.show{opacity:1;pointer-events:auto}
-  .polaroid{background:#fffdf6;color:#2b2b2b;padding:14px 14px 16px;width:min(88vw,430px);border-radius:2px;
-    box-shadow:0 20px 50px rgba(0,0,0,.6);transform:rotate(-2deg) scale(.55) translateY(40px);transition:transform .55s cubic-bezier(.3,1.4,.5,1);position:relative}
-  .overlay.show .polaroid{transform:rotate(-2deg) scale(1)}
-  .polaroid img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;background:#ddd}
-  .polaroid .date{font-family:Caveat,cursive;font-weight:700;font-size:27px;color:var(--red);margin-top:10px}
-  .polaroid .text{font-family:Caveat,cursive;font-size:23px;line-height:1.2;margin-top:2px;white-space:pre-line}
-  .tape{position:absolute;top:-12px;left:50%;width:110px;height:26px;margin-left:-55px;background:rgba(232,196,106,.55);transform:rotate(3deg);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .polaroid{position:relative;width:min(84vw,400px);padding:5.5% 5.5% 0;color:#111;border-radius:1px;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"),
+      linear-gradient(155deg,#ffffff 0%,#f7f6f2 55%,#efede7 100%);
+    box-shadow:0 1px 1px rgba(0,0,0,.25),0 6px 12px rgba(0,0,0,.35),0 24px 48px rgba(0,0,0,.45);
+    transform:rotate(-1.5deg) scale(.55) translateY(40px);transition:transform .6s cubic-bezier(.3,1.35,.5,1)}
+  .polaroid::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(120deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 35%,rgba(0,0,0,0) 70%,rgba(0,0,0,.05) 100%)}
+  .overlay.show .polaroid{transform:rotate(-1.5deg) scale(1)}
+  .polaroid img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#ddd;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);filter:saturate(1.05) contrast(1.02)}
+  .polaroid .date{font-family:"Playfair Display",Georgia,"Times New Roman",serif;font-weight:900;font-size:clamp(30px,9vw,44px);
+    letter-spacing:.5px;text-align:center;line-height:1;padding:7% 0 2%;color:#111}
+  .polaroid .text{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.35;
+    text-align:center;color:#2a2a2a;white-space:pre-line;padding:0 4% 2%}
+  .polaroid .text:empty{display:none}
+  .polaroid .foot{height:clamp(22px,6vw,34px)}
+  .polaroid .close{position:absolute;left:50%;bottom:-62px;transform:translateX(-50%);margin:0;box-shadow:0 4px 12px rgba(0,0,0,.4)}
   .note{background:linear-gradient(160deg,#fcf5e4,#efe1c1);color:#3b2a1a;width:min(86vw,380px);padding:26px 22px 20px;border-radius:10px;text-align:center;
     box-shadow:0 20px 50px rgba(0,0,0,.6);border:2px solid #c9a24f;transform:scale(.6);transition:transform .45s cubic-bezier(.3,1.5,.5,1)}
   .overlay.show .note{transform:scale(1)}
@@ -164,15 +216,17 @@
 <main>
   <h1>A Very Married McKnights’ Christmas</h1>
   <div class="tagline">Unsere erste Adventszeit als Mr. &amp; Mrs. McKnight</div>
-  <div class="wall" id="wall"></div>
+  <div id="cam"><div class="wall" id="wall"></div></div>
 </main>
+
+<div id="zoomUI"><div id="zText"></div><button id="zBack">← Zurück zum Kalender</button></div>
 
 <div class="overlay" id="overlay">
   <div class="polaroid hidden" id="polaroid">
-    <div class="tape"></div>
     <img id="pImg" alt="">
     <div class="date" id="pDate"></div>
     <div class="text" id="pText"></div>
+    <div class="foot"></div>
     <button class="close" data-close>Schließen</button>
   </div>
   <div class="note hidden" id="note">
@@ -196,6 +250,7 @@ const CONFIG = {
 // Bilder: lege sie in den Ordner "bilder" als 01.jpg, 02.jpg … 24.jpg.
 // Fehlt ein Bild, erscheint automatisch eine weihnachtliche Illustration.
 // "text": Nachricht unter dem Foto (leer lassen = nur das Datum).
+// Optional "titel": ersetzt das Datum unter dem Foto, z. B. titel: "2023" oder titel: "Gardasee 2023".
 const DOORS = [
   { day: 1,  token: "sk7q2m", text: "Heute beginnt unsere Reise durch den Advent.\n24 Türchen, 24 kleine Momente – hinter jedem steckt ein Stück von uns. ❤️" },
   { day: 2,  token: "p4x9wd", text: "" },
@@ -303,6 +358,9 @@ function buildWall(){
   // bilder/schnee.png = Schneekante, bilder/eis.png = Eiszapfen (jeweils mit transparentem Hintergrund)
   tryImg(["bilder/schnee.png"], src => { wall.style.setProperty("--snowcap-img", `url(${src})`); wall.style.setProperty("--capsize", "auto 100%"); wall.classList.add("photo-snow"); });
   tryImg(["bilder/eis.png"], src => { wall.style.setProperty("--icicles-img", `url(${src})`); wall.style.setProperty("--icesize", "auto 100%"); wall.classList.add("photo-ice"); });
+  // bilder/fach.jpg = Innenraum hinter dem Türchen (Hochformat 4:5, Lampe im Bild)
+  tryImg(["bilder/fach.jpg","bilder/fach.png"], src => { wall.style.setProperty("--fach", `url(${src})`); wall.classList.add("has-fach"); });
+  tryImg(["bilder/deko.png"], src => { wall.style.setProperty("--deko", `url(${src})`); wall.classList.add("has-deko"); });
   tryImg(["bilder/tuer.jpg","bilder/tuer.png"], src => { wall.style.setProperty("--door-img", `url(${src})`); wall.classList.add("photo-door"); });
   pos.forEach(([r,c], i) => {
     const day = ORDER[i], d = doorOf(day), [mr, mc] = posM[i];
@@ -311,7 +369,7 @@ function buildWall(){
       (has(pos, r-1, c) ? "" : " td") + (has(pos, r+1, c) ? "" : " bd") +
       (has(posM, mr-1, mc) ? "" : " tm") + (has(posM, mr+1, mc) ? "" : " bm");
     f.style.cssText = `--r:${r};--c:${c};--mr:${mr};--mc:${mc};--sx:${(i*37)%90}px`;
-    f.innerHTML = `<div class="win"><img alt=""><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
+    f.innerHTML = `<div class="win"><div class="bulb-in"></div><div class="print"><img alt=""><div class="pt">${d.titel || day + ". Dezember"}</div></div><div class="deko"></div><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
     f.setAttribute("role","button"); f.setAttribute("aria-label","Türchen " + day);
     f.addEventListener("click", () => tap(day));
     if (opened.has(day) && isUnlocked(day)) { f.classList.add("open"); setImg(f.querySelector("img"), day); }
@@ -336,27 +394,63 @@ function buildWall(){
 
 function tap(day){
   const f = frames[day];
-  if (f.classList.contains("open")) return showPhoto(day);
+  if (busy || document.body.classList.contains("zoomed")) return;
+  if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
   if (!isUnlocked(day)) return locked(day);
   if (preview) return openDoor(day);
   showNote("🎁", "Dieses Türchen öffnet sich nur mit dem QR-Code aus deinem Päckchen.", "");
 }
 
+/* ---------- Kamerafahrt zum Türchen ---------- */
+let busy = false;
+function zoomTo(f, done){
+  busy = true;
+  const cam = $("cam");
+  const go = () => {
+    const r = f.getBoundingClientRect(), c = cam.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const S = Math.min(innerWidth * .6 / r.width, innerHeight * .52 / r.height);
+    cam.style.transformOrigin = `${cx - c.left}px ${cy - c.top}px`;
+    cam.style.transform = `translate(${innerWidth/2 - cx}px, ${innerHeight/2 - cy - innerHeight*.06}px) scale(${S})`;
+    document.body.classList.add("zoomed"); f.classList.add("focus");
+    setTimeout(() => { busy = false; done && done(); }, 1550);
+  };
+  const r = f.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > innerHeight){ f.scrollIntoView({block:"center"}); setTimeout(go, 60); } else go();
+}
+function zoomOut(){
+  if (busy) return;
+  $("zoomUI").classList.remove("show");
+  $("cam").style.transform = "";
+  document.body.classList.remove("zoomed");
+  busy = true;
+  setTimeout(() => { document.querySelectorAll(".frame.focus").forEach(x => x.classList.remove("focus")); busy = false; }, 1500);
+}
+function showZoomUI(day){
+  $("zText").textContent = doorOf(day).text || "";
+  $("zoomUI").classList.add("show");
+}
+$("zBack").addEventListener("click", zoomOut);
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("overlay").classList.contains("show")) zoomOut(); });
+
 function openDoor(day){
   const f = frames[day];
-  if (f.classList.contains("open")) return showPhoto(day);
+  if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
   setImg(f.querySelector("img"), day);
-  const r = f.getBoundingClientRect();
-  const dr = f.querySelector(".door"), w = dr.getBoundingClientRect();
-  f.classList.add("glow");
-  dr.classList.add("poof");
-  dust(w);
-  setTimeout(() => burst(r.left + r.width/2, r.top + r.height/2), 350);
-  setTimeout(() => { f.classList.add("open"); dr.classList.remove("poof"); }, 1000);
   opened.add(day); saveOpened();
-  setTimeout(() => f.classList.remove("glow"), 1900);
-  setTimeout(() => showPhoto(day), 1500);
+  zoomTo(f, () => {
+    const dr = f.querySelector(".door"), w = dr.getBoundingClientRect();
+    dr.classList.add("poof"); dust(w);                        // Tür löst sich in Goldstaub auf
+    setTimeout(() => burst(w.left + w.width/2, w.top + w.height*.45, true), 400);
+    setTimeout(() => { f.classList.add("open"); dr.classList.remove("poof"); }, 950);   // Licht geht an, Foto erscheint
+    setTimeout(() => showZoomUI(day), 2300);
+  });
 }
+// Foto im Fach antippen = groß ansehen
+document.addEventListener("click", e => {
+  const p = e.target.closest(".frame.focus.open .print");
+  if (p && !busy){ e.stopPropagation(); showPhoto(+p.closest(".frame").getAttribute("aria-label").replace(/\D/g,"")); }
+}, true);
 
 let lastTease = -1, cdTimer = null;
 function locked(day){
@@ -383,7 +477,7 @@ function showPhoto(day){
   const d = doorOf(day), img = $("pImg");
   img.onerror = () => { img.onerror = null; img.src = placeholder(day); };
   img.src = "bilder/" + pad(day) + ".jpg";
-  $("pDate").textContent = day + ". Dezember";
+  $("pDate").textContent = d.titel || (day + ". Dezember");
   $("pText").textContent = d.text || "";
   openOverlay("polaroid");
 }
@@ -673,8 +767,8 @@ const fx = $("fx"), fc = fx.getContext("2d"); let parts = [], fxRun = false;
 function fxSize(){ const dpr = Math.min(devicePixelRatio||1,2); fx.width = innerWidth*dpr; fx.height = innerHeight*dpr; fx.style.width = innerWidth+"px"; fx.style.height = innerHeight+"px"; fc.setTransform(dpr,0,0,dpr,0,0); }
 addEventListener("resize", fxSize); fxSize();
 const COLS = ["#fff6d5","#ffd970","#ffe9a8","#ffffff","#ffc6d0","#f6c453"];
-function burst(cx, cy){
-  for (let i=0;i<70;i++){
+function burst(cx, cy, soft){
+  for (let i=0;i<(soft ? 40 : 70);i++){
     const a = Math.random()*6.283, sp = 1.5+Math.random()*5.5;
     parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1.8,l:1,d:.007+Math.random()*.014,s:1.5+Math.random()*3.5,c:COLS[i%COLS.length],rot:Math.random()*6,g:.045});
   }
@@ -725,8 +819,7 @@ if (tok){
   if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
   if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
   else {
-    setTimeout(() => frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}), 3600);
-    setTimeout(() => isUnlocked(d.day) ? openDoor(d.day) : locked(d.day), 4400);
+    setTimeout(() => { if (isUnlocked(d.day)) openDoor(d.day); else { frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => locked(d.day), 800); } }, 3700);
   }
 }
 </script>
