@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Very Married McKnights’ Christmas</title>
 <meta name="theme-color" content="#0a1426">
+<link rel="preload" as="image" href="bilder/hintergrund.jpg" media="(min-width: 641px), (orientation: landscape)">
+<link rel="preload" as="image" href="bilder/hintergrund-handy.jpg" media="(max-width: 640px) and (orientation: portrait)">
+<link rel="preload" as="image" href="bilder/holz.jpg">
+<link rel="preload" as="image" href="bilder/tuer.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
@@ -37,8 +41,16 @@
   .sub{font-family:Caveat,cursive;font-size:clamp(21px,4.4vw,29px);color:var(--gold);margin:4px 0 30px;text-align:center;min-height:1.3em;text-shadow:0 1px 4px rgba(0,0,0,.7)}
   .preview-banner{position:fixed;top:0;left:0;right:0;z-index:50;background:#e8c46a;color:#3a2600;text-align:center;font-size:13px;font-weight:600;padding:5px}
 
+  /* ---------- Ladebildschirm ---------- */
+  #loader{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    background:radial-gradient(ellipse at 50% 40%,#13213f,#070d1c 70%);transition:opacity .9s ease,visibility 0s .9s}
+  body.ready #loader{opacity:0;visibility:hidden}
+  .ld-flake{font-size:46px;color:#e9f1ff;animation:ldspin 3s linear infinite;filter:drop-shadow(0 0 10px rgba(200,220,255,.7))}
+  @keyframes ldspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .ld-text{font-family:Caveat,cursive;font-size:22px;color:rgba(255,255,255,.85);animation:ldpulse 2s ease-in-out infinite}
+  @keyframes ldpulse{0%,100%{opacity:.5}50%{opacity:1}}
   /* ---------- Holzwand ---------- */
-  .wall{opacity:0;animation:wallIn 2.5s cubic-bezier(.2,.7,.3,1) 1s forwards;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
+  .wall{opacity:0;display:grid;grid-template-columns:repeat(8,var(--cell));grid-auto-rows:calc(var(--cell) * 1.2);filter:drop-shadow(0 14px 22px rgba(0,0,0,.7))}
   .frame{
     grid-row:var(--r);grid-column:var(--c);position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;
     --inset:calc(var(--cell) * .11);
@@ -89,6 +101,7 @@
   .wall.has-fach .win::before{background:radial-gradient(ellipse 85% 60% at 50% 4%,rgba(255,214,140,.25),rgba(255,170,80,0) 70%)}
   .frame.open .deko{opacity:1}
 
+  body.ready .wall{animation:wallIn 2.5s cubic-bezier(.2,.7,.3,1) 1s forwards}
   @keyframes wallIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
   /* Schneehauben, Eiszapfen, Lichterkette */
   .cap,.ice,.lights{display:none;position:absolute;pointer-events:none}
@@ -175,15 +188,16 @@
   .hint::after{content:"";position:absolute;left:18px;right:18px;bottom:-19px;height:20px;background:var(--icicles) 0 0/70px 100% repeat-x}
 
   /* Handy: Form um 90° gedreht */
+  /* Handy: gleiche Form wie am PC, nur kompakt – darunter bleibt die Landschaft frei */
   @media (max-width:640px){
-    :root{--cell:min(92px, calc((100vw - 34px) / 4))}
-    .wall{grid-template-columns:repeat(4,var(--cell))}
-    .frame{grid-row:var(--mr);grid-column:var(--mc);background-image:var(--tex-m);
-      background-size:var(--tsm, calc(var(--cell) * 4) calc(var(--cell) * 9.6));
-      background-position:calc(var(--cell) * (1 - var(--mc))) calc(var(--cell) * 1.2 * (1 - var(--mr)))}
-    .run.d{display:none}
-    .run.m{display:block}
-    .frame{--ox:calc(var(--cell) * (1 - var(--mc)))}
+    :root{--cell:min(46px, calc((100vw - 22px) / 8))}
+    main{padding:calc(20px + env(safe-area-inset-top)) 8px 0;min-height:100svh}
+    h1{font-size:clamp(24px,7.4vw,32px)}
+    .tagline{font-size:clamp(16px,4.6vw,20px);margin:2px 0 calc(var(--cell) * .55)}
+    .sky{background-position:72% 100% !important}
+  }
+  @media (max-width:640px) and (orientation:portrait){
+    .sky.has-m{background-image:var(--bgm) !important}
   }
 
   /* ---------- Overlay ---------- */
@@ -221,6 +235,7 @@
 </head>
 <body>
 
+<div id="loader"><div class="ld-flake">❄</div><div class="ld-text">Einen Moment, der Weihnachtszauber lädt …</div></div>
 <div class="sky" id="sky"></div>
 <canvas id="snow"></canvas>
 <canvas id="snowFront"></canvas>
@@ -314,6 +329,7 @@ const TEASES = [
    Ab hier: Technik
    ===================================================================== */
 const $ = id => document.getElementById(id);
+const waits = [];   // Bilder, auf die vor dem Anzeigen gewartet wird
 const params = new URLSearchParams(location.search);
 const preview = params.get("vorschau") === CONFIG.previewKey;
 let now = new Date();
@@ -361,8 +377,11 @@ function buildWall(){
   wall.style.setProperty("--tex-d", woodTexture(8, 4));
   wall.style.setProperty("--tex-m", woodTexture(4, 8));
   // Eigene Fotos (optional): bilder/holz.jpg = rote Holzwand, bilder/tuer.jpg = Türchen
-  const tryImg = (names, ok) => { if (!names.length) return; const im = new Image();
-    im.onload = () => ok(im.src); im.onerror = () => tryImg(names.slice(1), ok); im.src = names[0]; };
+  const tryImg = (names, ok) => waits.push(new Promise(done => {
+    const next = list => { if (!list.length) return done(); const im = new Image();
+      im.onload = () => { ok(im.src); done(); }; im.onerror = () => next(list.slice(1)); im.src = list[0]; };
+    next(names);
+  }));
   tryImg(["bilder/holz.jpg","bilder/holz.png"], src => {
     wall.style.setProperty("--tex-d", `url(${src})`); wall.style.setProperty("--tex-m", `url(${src})`);
     wall.style.setProperty("--tsd", "calc(var(--cell) * 5) auto"); wall.style.setProperty("--tsm", "calc(var(--cell) * 5) auto");
@@ -708,9 +727,21 @@ function woodTexture(cols, rows){
   $("sky").innerHTML = svg;
 
   // Optional: eigenes Hintergrundbild "bilder/hintergrund.jpg" ersetzt die Zeichnung
+  const handy = matchMedia("(max-width: 640px) and (orientation: portrait)").matches;
   const bg = new Image();
-  bg.onload = () => { const s = $("sky"); s.style.background = `url(${bg.src}) center bottom / cover no-repeat`; s.querySelector("svg").style.display = "none"; };
+  waits.push(new Promise(done => { bg.onerror = done;
+    bg.onload = () => { const s = $("sky"); s.style.background = `url(${bg.src}) center bottom / cover no-repeat`; s.querySelector("svg").style.display = "none";
+      (bg.decode ? bg.decode() : Promise.resolve()).catch(() => {}).then(done); }; }));
   bg.src = "bilder/hintergrund.jpg";
+  // Optional: eigenes Handy-Hintergrundbild "bilder/hintergrund-handy.jpg" (nur im Hochformat am Handy)
+  const bgm = new Image();
+  const bgmWait = new Promise(done => { bgm.onerror = done;
+    bgm.onload = () => { const s = $("sky"); s.style.setProperty("--bgm", `url(${bgm.src})`); s.classList.add("has-m");
+      if (!s.style.background) s.style.background = `center bottom / cover no-repeat`;
+      if (innerWidth <= 640) s.querySelector("svg").style.display = "none";
+      (bgm.decode ? bgm.decode() : Promise.resolve()).catch(() => {}).then(done); }; });
+  if (handy) waits.push(bgmWait);
+  bgm.src = "bilder/hintergrund-handy.jpg";
 })();
 
 /* ---------- Realistischer Schnee: drei Tiefenebenen + Wind ---------- */
@@ -825,15 +856,21 @@ if (preview){
   b.textContent = unlockAll ? "Vorschau-Modus – alle Türchen offen, nichts wird gespeichert" : "Vorschau-Modus – simuliertes Datum: " + now.toLocaleDateString("de-DE");
   document.body.appendChild(b);
 }
+const ready = Promise.race([
+  Promise.all(waits).then(() => document.fonts ? document.fonts.ready : null),
+  new Promise(r => setTimeout(r, 10000))
+]).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
+  .then(() => document.body.classList.add("ready"));
+
 const tok = params.get("t");
-if (tok){
+if (tok) ready.then(() => {
   const d = DOORS.find(x => x.token === tok);
   if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
   if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
   else {
     setTimeout(() => { if (isUnlocked(d.day)) openDoor(d.day); else { frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => locked(d.day), 800); } }, 3700);
   }
-}
+});
 </script>
 </body>
 </html>
