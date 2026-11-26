@@ -740,8 +740,10 @@ function woodTexture(cols, rows){
       if (!s.style.background) s.style.background = `center bottom / cover no-repeat`;
       if (innerWidth <= 640) s.querySelector("svg").style.display = "none";
       (bgm.decode ? bgm.decode() : Promise.resolve()).catch(() => {}).then(done); }; });
-  if (handy) waits.push(bgmWait);
-  bgm.src = "bilder/hintergrund-handy.jpg";
+  // Handy-Bild nur laden, wenn es gebraucht wird (Handy im Hochformat), sonst erst beim Drehen/Verkleinern
+  const mq = matchMedia("(max-width: 640px) and (orientation: portrait)");
+  if (handy){ waits.push(bgmWait); bgm.src = "bilder/hintergrund-handy.jpg"; }
+  else { const later = () => { if (mq.matches && !bgm.src){ bgm.src = "bilder/hintergrund-handy.jpg"; } }; mq.addEventListener ? mq.addEventListener("change", later) : mq.addListener(later); }
 })();
 
 /* ---------- Realistischer Schnee: drei Tiefenebenen + Wind ---------- */
