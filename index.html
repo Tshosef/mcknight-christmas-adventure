@@ -152,7 +152,7 @@
   .frame.special .num{background:linear-gradient(180deg,#c99a3c,#7a5216 55%,#b98a30);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
   .frame.special::after{content:"✨";position:absolute;top:calc(var(--cell) * .12);right:calc(var(--cell) * .07);font-size:calc(var(--cell) * .16);filter:drop-shadow(0 0 3px rgba(255,220,120,.8));z-index:9}
   .frame.open::after{display:none}
-  .frame.focus{z-index:10}
+  .frame.focus{z-index:6}
   .door.poof{animation:poof 1s ease-in forwards;pointer-events:none}
   @keyframes poof{0%{opacity:1;filter:brightness(1)}25%{opacity:1;filter:brightness(1.5) drop-shadow(0 0 8px #ffd970);transform:scale(1.03)}100%{opacity:0;filter:brightness(2.4) blur(7px);transform:scale(1.12) translateY(-6px)}}
   .door{z-index:4}
@@ -475,7 +475,9 @@ function buildWall(){
   runs(pos, "d"); runs(posM, "m");
 }
 
+let userActed = false;
 function tap(day){
+  userActed = true;
   const f = frames[day];
   if (busy || document.body.classList.contains("zoomed")) return;
   if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
@@ -520,6 +522,7 @@ $("zBack").addEventListener("click", zoomOut);
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("overlay").classList.contains("show")) zoomOut(); });
 
 function openDoor(day){
+  if (busy || document.body.classList.contains("zoomed")) return;
   const f = frames[day];
   if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
   applyContent(day);
@@ -921,9 +924,8 @@ if (tok) Promise.all([ready, tokInfo]).then(([_, info]) => {
   keys.master = info.mk; saveKeys();
   for (const k in content) delete content[k];
   DOORS.forEach(d => { if (opened.has(d.day) && isUnlocked(d.day)) applyContent(d.day); });
-  const t = now.getDate(), dez = now.getMonth() === 11 && now.getFullYear() === CONFIG.year;
-  if (dez && t >= 1 && t <= 24 && !opened.has(t) && !unlockAll) setTimeout(() => openDoor(t), 3700);
-  else setTimeout(() => showNote("✨","Dein Adventskalender ist freigeschaltet!\nAb jetzt öffnest du jeden Tag dein Türchen einfach durch Antippen.",""), 3200);
+  // Kein automatisches Öffnen – Türchen öffnen sich nur durch aktives Antippen
+  if (!preview) setTimeout(() => showNote("✨","Dein Adventskalender ist freigeschaltet!\nTippe auf das Türchen des Tages, um es zu öffnen.",""), 600);
 });
 </script>
 </body>
