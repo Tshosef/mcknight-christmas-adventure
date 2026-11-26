@@ -44,7 +44,7 @@
   /* ---------- Ladebildschirm ---------- */
   #loader{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
     background:radial-gradient(ellipse at 50% 40%,#13213f,#070d1c 70%);transition:opacity .9s ease,visibility 0s .9s}
-  body.ready #loader{opacity:0;visibility:hidden}
+  body.ready #loader{opacity:0;visibility:hidden;pointer-events:none}
   .ld-flake{font-size:46px;color:#e9f1ff;animation:ldspin 3s linear infinite;filter:drop-shadow(0 0 10px rgba(200,220,255,.7))}
   @keyframes ldspin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
   .ld-text{font-family:Caveat,cursive;font-size:22px;color:rgba(255,255,255,.85);animation:ldpulse 2s ease-in-out infinite}
@@ -174,8 +174,8 @@
   #zoomUI{position:fixed;left:0;right:0;bottom:calc(18px + env(safe-area-inset-bottom));z-index:20;display:flex;flex-direction:column;align-items:center;gap:12px;
     padding:0 16px;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .5s,transform .5s}
   #zoomUI.show{opacity:1;transform:none;pointer-events:auto}
-  #zText{max-width:440px;background:linear-gradient(155deg,#fffdf7,#f1ede3);color:#222;padding:12px 18px;border-radius:3px;text-align:center;
-    font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:16px;line-height:1.4;white-space:pre-line;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  #zText{max-width:440px;background:linear-gradient(155deg,#fffdf7,#f1ede3);color:#1f2a44;padding:10px 20px;border-radius:3px;text-align:center;
+    font-family:Caveat,cursive;font-weight:700;font-size:26px;line-height:1.15;transform:rotate(-1deg);white-space:pre-line;box-shadow:0 8px 24px rgba(0,0,0,.5)}
   #zText:empty{display:none}
   #zBack{background:rgba(20,12,8,.75);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:10px 22px;font-size:15px;font-weight:600;cursor:pointer;
     -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
@@ -217,8 +217,8 @@
     box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);filter:saturate(1.05) contrast(1.02)}
   .polaroid .date{font-family:"Playfair Display",Georgia,"Times New Roman",serif;font-weight:900;font-size:clamp(30px,9vw,44px);
     letter-spacing:.5px;text-align:center;line-height:1;padding:7% 0 2%;color:#111}
-  .polaroid .text{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:clamp(15px,4vw,18px);line-height:1.35;
-    text-align:center;color:#2a2a2a;white-space:pre-line;padding:0 4% 2%}
+  .polaroid .text{font-family:Caveat,cursive;font-weight:700;font-size:clamp(22px,6vw,28px);line-height:1.15;
+    text-align:center;color:#1f2a44;white-space:pre-line;padding:0 4% 2%}
   .polaroid .text:empty{display:none}
   .polaroid .foot{height:clamp(22px,6vw,34px)}
   .polaroid .close{position:absolute;left:50%;bottom:-62px;transform:translateX(-50%);margin:0;box-shadow:0 4px 12px rgba(0,0,0,.4)}
@@ -270,39 +270,39 @@
    EINSTELLUNGEN – hier trägst du alles ein
    ===================================================================== */
 const CONFIG = {
+  masterId: "647d9db5c8e7c3cc",            // Fingerabdruck des QR-Codes (nicht der Code selbst)
   year: 2026,                       // Jahr des Kalenders
   previewKey: "weihnachtsmann-testet" // Vorschau: ?vorschau=weihnachtsmann-testet
 };
 
-// Bilder: lege sie in den Ordner "bilder" als 01.jpg, 02.jpg … 24.jpg.
-// Fehlt ein Bild, erscheint automatisch eine weihnachtliche Illustration.
-// "text": Nachricht unter dem Foto (leer lassen = nur das Datum).
-// Optional "titel": ersetzt das Datum unter dem Foto, z. B. titel: "2023" oder titel: "Gardasee 2023".
+// Fotos und Texte liegen VERSCHLÜSSELT im Ordner "bilder" (01.bin … 24.bin).
+// Nur der QR-Code aus dem Päckchen enthält den Schlüssel – ohne ihn sieht niemand die Bilder, auch nicht auf GitHub.
+// Ein einziger QR-Code schaltet den ganzen Kalender frei. "special" = Türchen mit ✨.
 const DOORS = [
-  { day: 1,  token: "sk7q2m", text: "Heute beginnt unsere Reise durch den Advent.\n24 Türchen, 24 kleine Momente – hinter jedem steckt ein Stück von uns. ❤️" },
-  { day: 2,  token: "p4x9wd", text: "" },
-  { day: 3,  token: "h2nf8t", text: "" },
-  { day: 4,  token: "zq6r1c", text: "" },
-  { day: 5,  token: "m8vb3k", text: "" },
-  { day: 6,  token: "n1kl4s", text: "Ho ho ho! Der Nikolaus war da 🎅\nUnd weil heute auch der 2. Advent ist, gibt's doppelt Grund zum Kuscheln. 🕯️🕯️" },
-  { day: 7,  token: "g5ta9e", text: "" },
-  { day: 8,  token: "w3jd7u", text: "" },
-  { day: 9,  token: "c9ry2h", text: "" },
-  { day: 10, token: "f6pm4z", text: "" },
-  { day: 11, token: "b2xe8n", text: "" },
-  { day: 12, token: "r7ch5v", text: "Halbzeit! 🎉\nDie Hälfte ist geschafft – und ich würde jeden Tag davon wieder mit dir verbringen." },
-  { day: 13, token: "y4gk1w", text: "3. Advent – drei Kerzen brennen schon. 🕯️🕯️🕯️\nAm schönsten leuchtet trotzdem dein Lachen." },
-  { day: 14, token: "d8sn6q", text: "" },
-  { day: 15, token: "u3fz9b", text: "" },
-  { day: 16, token: "k1wp7m", text: "" },
-  { day: 17, token: "e6hy3r", text: "" },
-  { day: 18, token: "q9dv2j", text: "" },
-  { day: 19, token: "a5nb8x", text: "" },
-  { day: 20, token: "t2mk6f", text: "4. Advent – alle Kerzen brennen! 🕯️🕯️🕯️🕯️\nNur noch vier Mal schlafen …" },
-  { day: 21, token: "v7qs4g", text: "" },
-  { day: 22, token: "j3zc9d", text: "" },
-  { day: 23, token: "x8le5p", text: "" },
-  { day: 24, token: "l4ow7y", text: "Frohe Weihnachten, mein Schatz! 🎄\nVon allen Geschenken bist du mein allerliebstes. ❤️" }
+  { day: 1, special: true },
+  { day: 2 },
+  { day: 3 },
+  { day: 4 },
+  { day: 5 },
+  { day: 6, special: true },
+  { day: 7 },
+  { day: 8 },
+  { day: 9 },
+  { day: 10 },
+  { day: 11 },
+  { day: 12, special: true },
+  { day: 13, special: true },
+  { day: 14 },
+  { day: 15 },
+  { day: 16 },
+  { day: 17 },
+  { day: 18 },
+  { day: 19 },
+  { day: 20, special: true },
+  { day: 21 },
+  { day: 22 },
+  { day: 23 },
+  { day: 24, special: true }
 ];
 
 // Welche Nummer an welcher Stelle der Bilderwand hängt (wie beim echten Kalender durcheinander)
@@ -347,6 +347,56 @@ const today0 = () => new Date(now.getFullYear(), now.getMonth(), now.getDate());
 const sleeps = day => Math.round((unlockDate(day) - today0()) / 864e5);
 
 let opened = new Set();
+const KEYSTORE = "advent-" + CONFIG.year + "-schluessel";
+let keys = {};
+function loadKeys(){ if (preview) return; try { keys = JSON.parse(localStorage.getItem(KEYSTORE) || "{}"); } catch(e){} }
+function saveKeys(){ if (preview) return; try { localStorage.setItem(KEYSTORE, JSON.stringify(keys)); } catch(e){} }
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,"0")).join("");
+const unhex = h => new Uint8Array(h.match(/../g).map(x => parseInt(x,16)));
+async function deriveFromToken(tok){                 // QR-Code -> Fingerabdruck + Hauptschlüssel
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(tok), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:new TextEncoder().encode("mcknight-advent-2026-master"), iterations:200000}, base, 512);
+  return { id: hex(bits.slice(0,8)), mk: hex(bits.slice(16,48)) };
+}
+const hasMaster = () => !!keys.master;
+async function doorKey(day){                          // Schlüssel je Türchen aus dem Hauptschlüssel
+  if (!keys.master) return null;
+  const k = await crypto.subtle.importKey("raw", unhex(keys.master), {name:"HMAC", hash:"SHA-256"}, false, ["sign"]);
+  return hex(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode("tuer-" + day)));
+}
+const content = {};                                   // entschlüsselte Inhalte je Tag
+function pixelate(url){                               // feine Verpixelung für die Gesamtansicht
+  return new Promise(res => { const im = new Image(); im.onload = () => {
+    const n = 26, c = document.createElement("canvas"); c.width = c.height = n; const g = c.getContext("2d");
+    const sz = Math.min(im.width, im.height); g.drawImage(im, (im.width-sz)/2, (im.height-sz)/2, sz, sz, 0, 0, n, n);
+    const big = document.createElement("canvas"); big.width = big.height = 520; const G = big.getContext("2d");
+    G.imageSmoothingEnabled = false; G.drawImage(c, 0, 0, 520, 520); res(big.toDataURL("image/jpeg", .85)); }; im.onerror = () => res(url); im.src = url; });
+}
+async function loadContent(day){
+  if (content[day] !== undefined) return content[day];
+  content[day] = null;
+  if (!window.crypto || !crypto.subtle) return null;
+  const k = await doorKey(day); if (!k) return null;
+  try {
+    const r = await fetch("bilder/" + pad(day) + ".bin", {cache:"no-cache"}); if (!r.ok) return null;
+    const buf = new Uint8Array(await r.arrayBuffer());
+    const key = await crypto.subtle.importKey("raw", unhex(k), "AES-GCM", false, ["decrypt"]);
+    const plain = new Uint8Array(await crypto.subtle.decrypt({name:"AES-GCM", iv:buf.slice(0,12)}, key, buf.slice(12)));
+    const n = new DataView(plain.buffer).getUint32(0), meta = JSON.parse(new TextDecoder().decode(plain.slice(4, 4+n)));
+    const url = URL.createObjectURL(new Blob([plain.slice(4+n)], {type:"image/jpeg"}));
+    content[day] = { url, titel: meta.titel || "", text: meta.text || "", spicy: !!meta.spicy, pix: meta.spicy ? await pixelate(url) : null };
+  } catch(e){ content[day] = null; }
+  return content[day];
+}
+function photoFor(day, sharp){ const c = content[day]; if (!c) return placeholder(day); return (c.spicy && !sharp) ? c.pix : c.url; }
+function titelFor(day){ const c = content[day]; return (c && c.titel) || (day + ". Dezember"); }
+async function applyContent(day){
+  await loadContent(day);
+  const f = frames[day]; if (!f) return;
+  f.querySelector(".print img").src = photoFor(day, f.classList.contains("focus"));
+  f.querySelector(".pt").textContent = titelFor(day);
+}
+
 function loadOpened(){ if (preview) return; try { opened = new Set(JSON.parse(localStorage.getItem(STORE) || "[]")); } catch(e){} }
 function saveOpened(){ if (preview) return; try { localStorage.setItem(STORE, JSON.stringify([...opened])); } catch(e){} }
 
@@ -360,12 +410,7 @@ function placeholder(day){
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><defs><radialGradient id="g" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="${b}"/><stop offset="1" stop-color="${a}"/></radialGradient></defs><rect width="400" height="500" fill="url(#g)"/>${flakes}<text x="200" y="285" font-size="190" text-anchor="middle">${e}</text><text x="200" y="460" font-size="26" font-family="Georgia,serif" fill="#fff" opacity=".7" text-anchor="middle">Foto folgt</text></svg>`;
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
-function setImg(img, day){
-  if (img.dataset.set) return;
-  img.dataset.set = 1;
-  img.onerror = () => { img.onerror = null; img.src = placeholder(day); };
-  img.src = "bilder/" + pad(day) + ".jpg";
-}
+function setImg(img, day){ applyContent(day); }
 
 /* ---------- Bilderwand aufbauen ---------- */
 const frames = {};
@@ -396,11 +441,11 @@ function buildWall(){
   pos.forEach(([r,c], i) => {
     const day = ORDER[i], d = doorOf(day), [mr, mc] = posM[i];
     const f = document.createElement("div");
-    f.className = "frame" + (d.text ? " special" : "") +
+    f.className = "frame" + (d.special ? " special" : "") +
       (has(pos, r-1, c) ? "" : " td") + (has(pos, r+1, c) ? "" : " bd") +
       (has(posM, mr-1, mc) ? "" : " tm") + (has(posM, mr+1, mc) ? "" : " bm");
     f.style.cssText = `--r:${r};--c:${c};--mr:${mr};--mc:${mc};--sx:${(i*37)%90}px`;
-    f.innerHTML = `<div class="win"><div class="bulb-in"></div><div class="print"><img alt=""><div class="pt">${d.titel || day + ". Dezember"}</div></div><div class="deko"></div><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
+    f.innerHTML = `<div class="win"><div class="bulb-in"></div><div class="print"><img alt=""><div class="pt">${day}. Dezember</div></div><div class="deko"></div><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
     f.setAttribute("role","button"); f.setAttribute("aria-label","Türchen " + day);
     f.addEventListener("click", () => tap(day));
     if (opened.has(day) && isUnlocked(day)) { f.classList.add("open"); setImg(f.querySelector("img"), day); }
@@ -428,8 +473,8 @@ function tap(day){
   if (busy || document.body.classList.contains("zoomed")) return;
   if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
   if (!isUnlocked(day)) return locked(day);
-  if (preview) return openDoor(day);
-  showNote("🎁", "Dieses Türchen öffnet sich nur mit dem QR-Code aus deinem Päckchen.", "");
+  if (preview || hasMaster()) return openDoor(day);
+  showNote("🎁", "Scanne zuerst den QR-Code von deiner Karte – dann öffnen sich die Türchen.", "");
 }
 
 /* ---------- Kamerafahrt zum Türchen ---------- */
@@ -444,6 +489,7 @@ function zoomTo(f, done){
     cam.style.transformOrigin = `${cx - c.left}px ${cy - c.top}px`;
     cam.style.transform = `translate(${innerWidth/2 - cx}px, ${innerHeight/2 - cy - innerHeight*.06}px) scale(${S})`;
     document.body.classList.add("zoomed"); f.classList.add("focus");
+    if (content[+f.getAttribute("aria-label").replace(/\D/g,"")]) f.querySelector(".print img").src = photoFor(+f.getAttribute("aria-label").replace(/\D/g,""), true);
     setTimeout(() => { busy = false; done && done(); }, 1550);
   };
   const r = f.getBoundingClientRect();
@@ -455,10 +501,12 @@ function zoomOut(){
   $("cam").style.transform = "";
   document.body.classList.remove("zoomed");
   busy = true;
+  document.querySelectorAll(".frame.focus").forEach(x => { const day = +x.getAttribute("aria-label").replace(/\D/g,"");
+    if (content[day] && content[day].spicy) setTimeout(() => { x.querySelector(".print img").src = photoFor(day, false); }, 350); });
   setTimeout(() => { document.querySelectorAll(".frame.focus").forEach(x => x.classList.remove("focus")); busy = false; }, 1500);
 }
 function showZoomUI(day){
-  $("zText").textContent = doorOf(day).text || "";
+  $("zText").textContent = (content[day] && content[day].text) || "";
   $("zoomUI").classList.add("show");
 }
 $("zBack").addEventListener("click", zoomOut);
@@ -467,7 +515,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("overla
 function openDoor(day){
   const f = frames[day];
   if (f.classList.contains("open")) return zoomTo(f, () => showZoomUI(day));
-  setImg(f.querySelector("img"), day);
+  applyContent(day);
   opened.add(day); saveOpened();
   zoomTo(f, () => {
     const dr = f.querySelector(".door"), w = dr.getBoundingClientRect();
@@ -505,11 +553,10 @@ $("overlay").addEventListener("click", e => { if (e.target === $("overlay") || e
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeOverlay(); });
 
 function showPhoto(day){
-  const d = doorOf(day), img = $("pImg");
-  img.onerror = () => { img.onerror = null; img.src = placeholder(day); };
-  img.src = "bilder/" + pad(day) + ".jpg";
-  $("pDate").textContent = d.titel || (day + ". Dezember");
-  $("pText").textContent = d.text || "";
+  const img = $("pImg");
+  img.src = photoFor(day, true);
+  $("pDate").textContent = titelFor(day);
+  $("pText").textContent = (content[day] && content[day].text) || "";
   openOverlay("polaroid");
 }
 
@@ -852,26 +899,29 @@ function fxLoop(){
 }
 
 /* ---------- Start ---------- */
-loadOpened(); buildWall(); subtitle();
+loadKeys(); loadOpened(); buildWall(); subtitle();
 if (preview){
   const b = document.createElement("div"); b.className = "preview-banner";
   b.textContent = unlockAll ? "Vorschau-Modus – alle Türchen offen, nichts wird gespeichert" : "Vorschau-Modus – simuliertes Datum: " + now.toLocaleDateString("de-DE");
   document.body.appendChild(b);
 }
 const ready = Promise.race([
-  Promise.all(waits).then(() => document.fonts ? document.fonts.ready : null),
+  Promise.all(waits).then(() => Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 2500))])),
   new Promise(r => setTimeout(r, 10000))
 ]).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
   .then(() => document.body.classList.add("ready"));
 
 const tok = params.get("t");
-if (tok) ready.then(() => {
-  const d = DOORS.find(x => x.token === tok);
-  if (history.replaceState){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
-  if (!d) setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
-  else {
-    setTimeout(() => { if (isUnlocked(d.day)) openDoor(d.day); else { frames[d.day].scrollIntoView({behavior:"smooth", block:"center"}); setTimeout(() => locked(d.day), 800); } }, 3700);
-  }
+if (history.replaceState && tok){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
+const tokInfo = (tok && window.crypto && crypto.subtle) ? deriveFromToken(tok).catch(() => null) : Promise.resolve(null);
+if (tok) Promise.all([ready, tokInfo]).then(([_, info]) => {
+  if (!info || info.id !== CONFIG.masterId) return setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
+  keys.master = info.mk; saveKeys();
+  for (const k in content) delete content[k];
+  DOORS.forEach(d => { if (opened.has(d.day) && isUnlocked(d.day)) applyContent(d.day); });
+  const t = now.getDate(), dez = now.getMonth() === 11 && now.getFullYear() === CONFIG.year;
+  if (dez && t >= 1 && t <= 24 && !opened.has(t) && !unlockAll) setTimeout(() => openDoor(t), 3700);
+  else setTimeout(() => showNote("✨","Dein Adventskalender ist freigeschaltet!\nAb jetzt öffnest du jeden Tag dein Türchen einfach durch Antippen.",""), 3200);
 });
 </script>
 </body>
