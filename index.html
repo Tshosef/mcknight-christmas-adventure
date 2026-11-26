@@ -913,7 +913,8 @@ if (preview){
 const ready = Promise.race([
   Promise.all(waits).then(() => Promise.race([document.fonts ? document.fonts.ready : null, new Promise(r => setTimeout(r, 2500))])),
   new Promise(r => setTimeout(r, 10000))
-]).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
+]).then(() => new Promise(r => setTimeout(r, 1000)))          // Ladebildschirm 1 Sekunde länger zeigen
+  .then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))
   .then(() => document.body.classList.add("ready"));
 
 const tok = params.get("t");
