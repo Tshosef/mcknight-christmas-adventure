@@ -91,7 +91,12 @@
     transform:translate(-50%,-50%) rotate(-2.5deg) scale(.9);opacity:0;transition:opacity .8s .55s,transform 1s .55s cubic-bezier(.3,1.3,.5,1)}
   .frame.open .print{opacity:1;transform:translate(-50%,-50%) rotate(-2.5deg) scale(1)}
   .print img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;background:#bbb}
-  .print .pt{font-family:"Playfair Display",Georgia,serif;font-weight:900;color:#111;text-align:center;font-size:calc(var(--cell) * .072);line-height:1;padding:9% 0 10%;white-space:nowrap;overflow:hidden}
+  .print{cursor:default}
+  .print .pt{text-align:left;padding:5% 2% 7%;color:#1f2a44}
+  .print .pd{display:block;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--cell) * .036);line-height:1.1;color:#555}
+  .print .ptx{display:block;font-family:Caveat,cursive;font-weight:700;font-size:calc(var(--cell) * .046);line-height:1.3;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .print .ptx:empty{display:none}
   .deko{position:absolute;left:-4%;bottom:-2%;width:46%;height:42%;z-index:3;background:var(--deko) left bottom/contain no-repeat;opacity:0;transition:opacity .8s .8s;pointer-events:none;display:none}
   .wall.has-deko .deko{display:block}
   .wall.has-fach .win{background:var(--fach) center / cover no-repeat}
@@ -390,11 +395,13 @@ async function loadContent(day){
 }
 function photoFor(day, sharp){ const c = content[day]; if (!c) return placeholder(day); return (c.spicy && !sharp) ? c.pix : c.url; }
 function titelFor(day){ const c = content[day]; return (c && c.titel) || (day + ". Dezember"); }
+function shortFor(day){ const c = content[day]; return (c && c.titel) || (day + " Dez."); }
 async function applyContent(day){
   await loadContent(day);
   const f = frames[day]; if (!f) return;
   f.querySelector(".print img").src = photoFor(day, f.classList.contains("focus"));
-  f.querySelector(".pt").textContent = titelFor(day);
+  f.querySelector(".pd").textContent = shortFor(day);
+  f.querySelector(".ptx").textContent = (content[day] && content[day].text) || "";
 }
 
 function loadOpened(){ if (preview) return; try { opened = new Set(JSON.parse(localStorage.getItem(STORE) || "[]")); } catch(e){} }
@@ -445,7 +452,7 @@ function buildWall(){
       (has(pos, r-1, c) ? "" : " td") + (has(pos, r+1, c) ? "" : " bd") +
       (has(posM, mr-1, mc) ? "" : " tm") + (has(posM, mr+1, mc) ? "" : " bm");
     f.style.cssText = `--r:${r};--c:${c};--mr:${mr};--mc:${mc};--sx:${(i*37)%90}px`;
-    f.innerHTML = `<div class="win"><div class="bulb-in"></div><div class="print"><img alt=""><div class="pt">${day}. Dezember</div></div><div class="deko"></div><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
+    f.innerHTML = `<div class="win"><div class="bulb-in"></div><div class="print"><img alt=""><div class="pt"><span class="pd">${day} Dez.</span><span class="ptx"></span></div></div><div class="deko"></div><div class="door"><span class="orn">★</span><span class="num">${day}</span></div></div><div class="lock">🔒</div>`;
     f.setAttribute("role","button"); f.setAttribute("aria-label","Türchen " + day);
     f.addEventListener("click", () => tap(day));
     if (opened.has(day) && isUnlocked(day)) { f.classList.add("open"); setImg(f.querySelector("img"), day); }
@@ -506,7 +513,7 @@ function zoomOut(){
   setTimeout(() => { document.querySelectorAll(".frame.focus").forEach(x => x.classList.remove("focus")); busy = false; }, 1500);
 }
 function showZoomUI(day){
-  $("zText").textContent = (content[day] && content[day].text) || "";
+  $("zText").textContent = "";
   $("zoomUI").classList.add("show");
 }
 $("zBack").addEventListener("click", zoomOut);
@@ -525,11 +532,6 @@ function openDoor(day){
     setTimeout(() => showZoomUI(day), 2300);
   });
 }
-// Foto im Fach antippen = groß ansehen
-document.addEventListener("click", e => {
-  const p = e.target.closest(".frame.focus.open .print");
-  if (p && !busy){ e.stopPropagation(); showPhoto(+p.closest(".frame").getAttribute("aria-label").replace(/\D/g,"")); }
-}, true);
 
 let lastTease = -1, cdTimer = null;
 function locked(day){
