@@ -917,7 +917,7 @@ const ready = Promise.race([
   .then(() => document.body.classList.add("ready"));
 
 const tok = params.get("t");
-if (history.replaceState && tok){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
+if (history.replaceState && tok && !preview){ const u = new URL(location.href); u.searchParams.delete("t"); history.replaceState(null, "", u.pathname + u.search); }
 const tokInfo = (tok && window.crypto && crypto.subtle) ? deriveFromToken(tok).catch(() => null) : Promise.resolve(null);
 if (tok) Promise.all([ready, tokInfo]).then(([_, info]) => {
   if (!info || info.id !== CONFIG.masterId) return setTimeout(() => showNote("🤔","Diesen Zauber-Code kenne ich nicht …",""), 400);
